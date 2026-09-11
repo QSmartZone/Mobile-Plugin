@@ -1,0 +1,15 @@
+{
+  "name": "mobile",
+  "description": "Marketplace cá nhân cho plugin mobile dev generic (Flutter/Android native/iOS), tách biệt business logic từng project.",
+  "owner": {
+    "name": "Quyen Chau",
+    "email": "ctuanquyen97@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "mobile-dev",
+      "source": "./",
+      "description": "Generic mobile dev toolkit: rule hot-reload cho Dart/Flutter, skill android-cli, skill Flutter/Android-native/iOS, agent chuyên gia flutter-expert/android-native-expert/ios-expert. Không dính business logic của project cụ thể nào. Multi-platform: Claude Code/Desktop, Antigravity IDE + agy, DeepSeek Harness dsh; hỗ trợ cài user scope hoặc project scope."
+    }
+  ]
+}

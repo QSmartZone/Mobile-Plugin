@@ -1,0 +1,5 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "mobile-dev",
+  "description": "Generic mobile dev toolkit: rule hot-reload cho Dart/Flutter, skill android-cli, skill Flutter/Android-native/iOS, agent chuyên gia flutter-expert/android-native-expert/ios-expert."
+}

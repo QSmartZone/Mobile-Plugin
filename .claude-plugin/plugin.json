@@ -1,7 +1,7 @@
 {
   "name": "mobile-dev",
-  "version": "0.1.0",
-  "description": "Generic mobile dev toolkit: rule hot-reload cho Dart/Flutter, skill android-cli, skill Flutter/Android-native/iOS, agent chuyên gia flutter-expert/android-native-expert/ios-expert. Không dính business logic của project cụ thể nào.",
+  "version": "0.2.0",
+  "description": "Generic mobile dev toolkit: rule hot-reload cho Dart/Flutter, skill android-cli, skill Flutter/Android-native/iOS/React Native, agent chuyên gia flutter-expert/android-native-expert/ios-expert/react-native-expert. Không dính business logic của project cụ thể nào.",
   "author": {
     "name": "Quyen Chau",
     "email": "ctuanquyen97@gmail.com"
@@ -11,6 +11,7 @@
     "flutter",
     "android",
     "ios",
-    "mobile"
+    "mobile",
+    "react-native"
   ]
 }

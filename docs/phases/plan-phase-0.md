@@ -14,6 +14,27 @@ state: shipped · adr: không có (không có ≥2 option cần user chốt)
 - Actual result:
   - Đúng Expectation. SKILL.md có section "Soi project trước" đầu tiên + không còn câu "SwiftUI mặc định" thiếu điều kiện; đủ 9 file references/ (3 cập nhật: swiftui-vs-uikit.md, architecture.md, testing.md + 6 mới: interoperability.md, uikit-storyboard.md, navigation.md, api-integration-error-handling.md, platform-capabilities.md, security-performance-accessibility.md); agents/ios-expert.md đồng bộ, không có `tools:` trong frontmatter. Review gate: FAIL lượt 1 (2 MEDIUM: default cứng SwiftUI còn sót trong bảng quyết định swiftui-vs-uikit.md, khẳng định cứng NavigationStack trong architecture.md mâu thuẫn navigation.md; 2 LOW: ví dụ test so sánh enum không Equatable, `fatalError` reachable trong ví dụ retry) → fix hết → PASS lượt 2 (còn 1 LOW nit vô hại — thiếu nhắc case greenfield trong SKILL.md, không chặn).
 
+## react-native-dev-add
+
+state: shipped · adr: không có (không có ≥2 option cần user chốt)
+
+- Requirement:
+  - Repo mobile-plugin chưa có skill nào cho React Native (grep 0 match). Cần skill `react-native-dev` cùng chuẩn với `flutter-dev`/`android-native-dev`/`ios-dev`: soi codebase thật trước (Expo vs bare RN, `package.json`, cấu trúc `src/`) trước khi áp default.
+  - Đủ tài liệu cho: Expo vs bare workflow, state management, cấu trúc dự án, navigation, API integration & error handling, performance, UI thích ứng & accessibility, testing, native module/platform code.
+- Acceptance criteria:
+  - `skills/react-native-dev/SKILL.md` có section "soi codebase trước", đủ 8 file `references/*.md` đúng chủ đề đã chốt.
+  - `agents/react-native-expert.md` đồng bộ nguyên tắc với SKILL.md, không có `tools:` trong frontmatter (constraint [multi-platform-support](../adr/multi-platform-support.md)).
+  - `.agents/AGENTS.md` có dòng routing `*.tsx`/`*.jsx` (RN project) → `react-native-dev`.
+  - 3 manifest (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.agents/plugin.json`) nhắc React Native, `plugin.json` bump version + thêm keyword.
+- Expectation:
+  - Agent áp skill vào project RN thật (Expo hoặc bare) → đề xuất đúng theo lib/kiến trúc project đã có, không ép mặc định cứng.
+- Actual result:
+  - Lệch số file so với Acceptance criteria: 9 file `references/*.md` thay vì 8 (thêm `expo-vs-bare.md` vì RN có topic Expo vs bare workflow mà Flutter không có, đã chốt giữ 9) — gồm expo-vs-bare, state-management, project-structure, navigation, api-integration-error-handling, performance, ui-adaptive-accessibility, testing, native-modules.
+  - `agents/react-native-expert.md` đủ 5 key frontmatter, không có `tools:`, đồng bộ đủ 9 reference.
+  - `.agents/AGENTS.md` có dòng routing `*.tsx, *.jsx (React Native project — có metro.config.js/app.json Expo)` → `react-native-dev`.
+  - 3 manifest nhắc React Native; `plugin.json` bump version 0.1.0 → 0.2.0 + thêm keyword "react-native".
+  - Review gate: FAIL lượt 1 (`skills/react-native-dev/references/native-modules.md`: mốc New Architecture default sai — nói RN 0.68+ đã ổn định, thực tế New Architecture chỉ default từ RN 0.76 (10/2024); liệt `expo-permissions` như lựa chọn hợp lệ dù đã deprecated từ SDK 41) → fix hết → PASS lượt 2.
+
 ## android-native-dev-improve
 
 state: shipped · adr: không có (không có ≥2 option cần user chốt)

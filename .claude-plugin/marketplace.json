@@ -9,7 +9,7 @@
     {
       "name": "mobile-dev",
       "source": "./",
-      "description": "Generic mobile dev toolkit: rule hot-reload cho Dart/Flutter, skill android-cli, skill Flutter/Android-native/iOS, agent chuyên gia flutter-expert/android-native-expert/ios-expert. Không dính business logic của project cụ thể nào. Multi-platform: Claude Code/Desktop, Antigravity IDE + agy, DeepSeek Harness dsh; hỗ trợ cài user scope hoặc project scope."
+      "description": "Generic mobile dev toolkit: rule hot-reload cho Dart/Flutter, skill android-cli, skill Flutter/Android-native/iOS/React Native, agent chuyên gia flutter-expert/android-native-expert/ios-expert/react-native-expert. Không dính business logic của project cụ thể nào. Multi-platform: Claude Code/Desktop, Antigravity IDE + agy, DeepSeek Harness dsh; hỗ trợ cài user scope hoặc project scope."
     }
   ]
 }

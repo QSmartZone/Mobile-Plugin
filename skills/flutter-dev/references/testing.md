@@ -28,7 +28,7 @@ Chỉ thêm golden test cho UI có risk cao (design system component, màn hình
 
 ## Unit test cho logic non-trivial
 
-Bloc/Cubit, use case, parser, mapper JSON→model: test tách khỏi widget, dùng `bloc_test` cho Bloc/Cubit để assert đúng thứ tự state emit.
+Bloc, use case, parser, mapper JSON→model: test tách khỏi widget, dùng `bloc_test` cho Bloc để assert đúng thứ tự state emit.
 
 ## Integration test
 
@@ -37,3 +37,9 @@ Dùng package `integration_test`, chạy trên thiết bị/emulator thật — 
 ## Nguyên tắc
 
 Bug fix có branch/loop/parser bị lỗi → viết ít nhất 1 test tái hiện lỗi trước khi fix (fail → fix → pass). Không viết test cho getter/setter/UI tĩnh không logic.
+
+## Mức test tối thiểu theo risk, không phải số lượng cố định
+
+- Logic có branch/loop/parse/tính toán (business logic trong bloc/notifier, validator, mapper JSON→model) → luôn cần unit test hoặc `bloc_test`, bất kể team có quy định coverage % hay không — đây là chỗ lỗi im lặng gây hậu quả thật.
+- UI thuần hiển thị dữ liệu, không rẽ nhánh logic → không bắt buộc test riêng cho từng widget; ưu tiên thời gian viết test cho chỗ risk cao hơn ở trên.
+- Không tự suy ra yêu cầu coverage % cụ thể nếu project chưa tự quy định (CI check, file convention riêng) — áp con số cứng khi chưa có căn cứ từ chính dự án dễ biến thành rào cản hình thức thay vì bắt lỗi thật.

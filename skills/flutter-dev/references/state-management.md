@@ -17,13 +17,13 @@ Sai lầm thường gặp: gọi `setState` trong `build()` hoặc trong callbac
 
 Dùng khi vài widget con cháu (không quá sâu) cần đọc chung 1 giá trị, không cần business logic phức tạp. `Provider.of<T>(context, listen: false)` cho action, `context.watch<T>()` cho rebuild theo thay đổi.
 
-## Bloc / Cubit
+## Bloc
 
 Dùng khi:
 - Business logic có nhiều state rõ ràng (loading/success/error/empty) cần test độc lập UI.
 - Luồng async phức tạp (debounce, race condition giữa nhiều event).
 
-`Cubit` cho case đơn giản (method gọi trực tiếp, không cần event object). `Bloc` khi cần trace được lịch sử event (debug, analytics, undo).
+Luôn dùng event class riêng cho mỗi thao tác (`*_event.dart`) và state class riêng (`*_state.dart`), kể cả màn hình đơn giản — nhất quán 1 pattern cho toàn bộ business logic trong project giúp mọi feature debug/test theo đúng 1 cách, không phải đoán feature nào theo pattern nào.
 
 ```dart
 sealed class AuthState {}

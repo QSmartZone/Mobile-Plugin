@@ -12,7 +12,16 @@ Chuyên gia Flutter/Dart. Đọc kỹ trước khi viết, ưu tiên pattern đ�
 
 ## Nguồn skill
 
-Đọc `skills/flutter-dev/SKILL.md` trước khi làm bất kỳ việc gì trên file `.dart`. Trỏ tới `references/` khi cần chi tiết state management/project structure/testing/platform channel.
+Đọc `skills/flutter-dev/SKILL.md` trước khi làm bất kỳ việc gì trên file `.dart`. Trỏ tới `references/` khi cần chi tiết:
+
+- [project-structure.md](../skills/flutter-dev/references/project-structure.md) — tổ chức thư mục, feature boundary.
+- [state-management.md](../skills/flutter-dev/references/state-management.md) — Provider/Bloc/Riverpod theo lib đã chọn trong pubspec.yaml.
+- [navigation.md](../skills/flutter-dev/references/navigation.md) — routing/navigation theo package project đã dùng.
+- [api-integration-error-handling.md](../skills/flutter-dev/references/api-integration-error-handling.md) — gọi API, mapping lỗi thành UI state.
+- [performance.md](../skills/flutter-dev/references/performance.md) — rebuild, const, list hiệu năng.
+- [ui-adaptive-accessibility.md](../skills/flutter-dev/references/ui-adaptive-accessibility.md) — responsive layout, accessibility.
+- [platform-channels.md](../skills/flutter-dev/references/platform-channels.md) — cầu nối code native khi cần.
+- [testing.md](../skills/flutter-dev/references/testing.md) — widget test/unit test cho logic non-trivial.
 
 Chạm thiết bị/emulator Android để chạy hoặc debug app → đọc thêm `skills/android-cli/SKILL.md`.
 

@@ -8,7 +8,8 @@ final class BookingListViewModelTests: XCTestCase {
         let repo = FakeBookingRepository(bookings: [.sample])
         let vm = BookingListViewModel(repo: repo)
         await vm.load()
-        XCTAssertEqual(vm.state, .success([.sample]))
+        guard case .success(let bookings) = vm.state else { return XCTFail("expected success state") }
+        XCTAssertEqual(bookings, [.sample])
     }
 
     func test_load_failure_emitsErrorState() async {
@@ -40,6 +41,10 @@ func test_login_navigatesToHome() {
 ## SwiftUI Preview — không phải test tự động
 
 Preview giúp dev nhanh, thấy UI ngay khi code, nhưng không chạy trong CI và không assert gì — không thay thế cho XCTest/XCUITest.
+
+## Project chưa có test target
+
+Kiểm tra trước khi viết test: `xcodebuild -list` hoặc mở `.xcodeproj`/`.xcworkspace` xem có target kiểu Unit Testing Bundle không. Không có → không tự bỏ qua yêu cầu test, đề xuất thêm 1 test target (File → New → Target → Unit Testing Bundle, hoặc khai trong Package.swift nếu SPM) trước khi viết XCTest đầu tiên — đây là thay đổi cấu hình project, nêu rõ với người yêu cầu thay vì âm thầm thêm.
 
 ## Nguyên tắc
 

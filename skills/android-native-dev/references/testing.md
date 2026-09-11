@@ -42,6 +42,12 @@ fun bookingList_showsItems() {
 
 Chỉ dùng khi test màn hình còn XML layout/View — không viết Espresso test mới cho màn hình đã migrate Compose.
 
+## Mức test theo risk, không phải số lượng cố định
+
+Logic có branch/loop/parse/tính toán → luôn cần test. UI thuần hiển thị (Composable preview tĩnh, layout không logic) → không ép viết test.
+
+Nếu project gần như chưa có test nào (không có convention sẵn để soi theo) → không tự bịa coverage % hay pattern cầu kỳ, bootstrap từ pattern cơ bản đã có sẵn trong chính file này (JUnit + coroutine test dispatcher cho ViewModel).
+
 ## Nguyên tắc
 
 Bug fix có branch/loop lỗi → viết test tái hiện bug (fail trước khi fix). ViewModel mới → test tối thiểu 2 case: thành công + lỗi. Không test getter/setter hay Compose preview tĩnh không logic.

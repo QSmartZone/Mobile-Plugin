@@ -36,3 +36,10 @@ sealed interface Resource<out T> {
 ## Extension function
 
 Dùng để thêm hành vi cho type có sẵn (Android SDK class) thay vì tạo utility class `*Utils` với static method — nhưng không lạm dụng extension cho logic nghiệp vụ phức tạp nên nằm ở đâu đó có tên rõ ràng hơn (Repository/UseCase).
+
+## Java interop
+
+- `@JvmStatic` cho hàm/property trong `companion object` cần gọi từ Java như static method — thiếu annotation này, Java phải gọi qua `Companion.xxx()`.
+- Tránh default-argument trong hàm Kotlin sẽ bị gọi từ Java — Java không thấy overload tự sinh, trừ khi thêm `@JvmOverloads`.
+- Dùng `@Nullable`/`@NonNull` (androidx.annotation) trên API Java để Kotlin hiểu đúng nullability khi gọi ngược (thiếu annotation, Kotlin coi type là platform type `String!`, mất type-safety null).
+- Không migrate file Java sang Kotlin chỉ vì tiện, trừ khi được yêu cầu tường minh (chi tiết ở SKILL.md) — mục này chỉ nói khía cạnh interop kỹ thuật.

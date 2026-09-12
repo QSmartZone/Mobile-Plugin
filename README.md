@@ -20,7 +20,9 @@ Plugin generic cho mobile dev (Flutter, Android native, iOS) — không dính bu
 
 ```sh
 ./install.sh                          # hỏi scope + host qua menu
-./install.sh --scope project          # cài vào project đang đứng (thư mục gọi lệnh này)
+./install.sh --scope project --project ~/dev/my-app   # cài vào project chỉ định
+cd ~/dev/my-app && /path/to/mobile-plugin/install.sh --scope project   # hoặc đứng trong project mà gọi
+./install.sh --scope project          # đứng trong repo plugin thì script hỏi path project
 ./install.sh --scope user             # cài global cho user
 ./install.sh --dry-run                # xem sẽ làm gì, không đổi gì trên đĩa
 ./install.sh --only claude            # chỉ cài Claude, bỏ qua agy/dsh

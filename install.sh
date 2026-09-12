@@ -5,7 +5,8 @@
 # Hỏi thêm scope: user (global, giống team-plugin) hoặc project (đúng thư mục đang đứng khi
 # gọi script này). Không có hook nào trong plugin này, khác team-plugin.
 # Idempotent; một host lỗi không chặn host khác.
-# Usage: ./install.sh [--dry-run] [--only claude,agy,dsh] [--scope user|project]
+# Usage: ./install.sh [--dry-run] [--only claude,agy,dsh] [--scope user|project] [--project <path>]
+#   --project: thư mục project đích cho scope=project (mặc định: thư mục đang đứng; hỏi nếu đang đứng trong repo này).
 set -eu
 
 MARKER=".mobile-plugin" # ghi vào mọi thư mục installer sở hữu; không có marker thì không đè
@@ -24,6 +25,7 @@ while [ $# -gt 0 ]; do
     --dry-run) DRY_RUN=1 ;;
     --only) ONLY=$(printf '%s' "${2:-}" | tr ',' ' '); shift ;;
     --scope) SCOPE=${2:-}; shift ;;
+    --project) PROJECT_DIR=${2:-}; shift ;;
     -h|--help) sed -n '2,9p' "$0"; exit 0 ;;
     *) echo "tham số lạ: $1" >&2; exit 1 ;;
   esac
@@ -354,8 +356,23 @@ if [ -z "$SCOPE" ]; then
     echo "stdin không phải TTY — chọn scope bằng --scope user|project" >&2
     exit 1
   fi
-  choose "Cài scope nào? user = global ($CLAUDE_DIR ...); project = $PROJECT_DIR" "user" "project" || exit 0
+  choose "Cài scope nào? user = global ($CLAUDE_DIR ...); project = thư mục project đích" "user" "project" || exit 0
   SCOPE=$CHOICE
+fi
+if [ "$SCOPE" = project ]; then
+  # Đứng trong chính repo plugin (trường hợp gõ ./install.sh tại đây) thì không có project đích — hỏi path.
+  if [ -d "$PROJECT_DIR" ] && [ "$(CDPATH= cd -- "$PROJECT_DIR" && pwd -P)" = "$REPO_ROOT" ]; then
+    if [ "$IS_TTY" != 1 ]; then
+      echo "đang đứng trong repo plugin — truyền --project <path> hoặc cd vào project rồi chạy $REPO_ROOT/install.sh" >&2
+      exit 1
+    fi
+    printf 'Đường dẫn project muốn cài (thư mục có sẵn): ' > /dev/tty
+    IFS= read -r PROJECT_DIR < /dev/tty
+    case $PROJECT_DIR in "~"|"~/"*) PROJECT_DIR="$HOME_DIR${PROJECT_DIR#"~"}" ;; esac
+  fi
+  [ -n "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR" ] || { echo "lỗi: project '$PROJECT_DIR' không phải thư mục có sẵn" >&2; exit 1; }
+  PROJECT_DIR=$(CDPATH= cd -- "$PROJECT_DIR" && pwd -P)
+  [ "$PROJECT_DIR" != "$REPO_ROOT" ] || { echo "lỗi: project trùng repo plugin" >&2; exit 1; }
 fi
 echo "scope: $SCOPE $([ "$SCOPE" = project ] && echo "(project = $PROJECT_DIR)")"
 

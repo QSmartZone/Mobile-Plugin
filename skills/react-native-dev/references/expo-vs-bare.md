@@ -27,7 +27,7 @@ Cần khi:
 - Cần custom native code (Swift/Kotlin) sâu mà config plugin không expose được (sửa `AppDelegate`, custom `Info.plist` key phức tạp, linking SDK native bên thứ ba yêu cầu chỉnh Podfile tay).
 - Migrate app cũ React Native CLI có sẵn `ios/`/`android/` custom.
 
-Với Expo, không nhất thiết phải "eject" hẳn — chạy `npx expo prebuild` để generate `ios/`/`android/` từ config, vẫn giữ được phần lớn tooling Expo (EAS Build, most Expo SDK API). Chỉ dùng React Native CLI thuần (`npx react-native init`) khi không cần bất kỳ tiện ích Expo nào.
+Với Expo, không nhất thiết phải "eject" hẳn — chạy `npx expo prebuild` để generate `ios/`/`android/` từ config, vẫn giữ được phần lớn tooling Expo (EAS Build, most Expo SDK API). `npx react-native init` deprecated từ RN 0.75, dùng `npx @react-native-community/cli init` cho bare project thuần; project mới thường nên bắt đầu bằng `npx create-expo-app` rồi prebuild khi cần, thay vì init bare ngay từ đầu.
 
 ```bash
 npx expo prebuild        # generate ios/ android/ từ app.json + plugins

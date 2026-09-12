@@ -1,15 +1,6 @@
 # Lifecycle và state — Activity/Fragment
 
-## Activity lifecycle
-
-```
-onCreate → onStart → onResume → [đang chạy] → onPause → onStop → onDestroy
-```
-
-- `onCreate`: khởi tạo UI, binding, ViewModel — chạy 1 lần trừ khi Activity bị recreate.
-- `onStart`/`onStop`: Activity visible/không còn visible (vẫn có thể chưa destroy).
-- `onResume`/`onPause`: Activity ở foreground tương tác được / mất foreground (dialog khác che lên cũng gọi `onPause`).
-- `onDestroy`: dọn resource cuối cùng — không đảm bảo luôn được gọi (process có thể bị kill thẳng), nên không đặt logic bắt buộc phải chạy (lưu dữ liệu quan trọng) chỉ ở đây.
+2 bẫy chính cần nhớ: null binding ở `onDestroyView` (Fragment), và process death khác config change (ViewModel mất theo process death, không mất theo config change).
 
 ## Fragment lifecycle — View lifecycle khác Fragment lifecycle
 

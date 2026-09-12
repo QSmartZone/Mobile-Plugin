@@ -46,6 +46,14 @@ Preview giúp dev nhanh, thấy UI ngay khi code, nhưng không chạy trong CI 
 
 Kiểm tra trước khi viết test: `xcodebuild -list` hoặc mở `.xcodeproj`/`.xcworkspace` xem có target kiểu Unit Testing Bundle không. Không có → không tự bỏ qua yêu cầu test, đề xuất thêm 1 test target (File → New → Target → Unit Testing Bundle, hoặc khai trong Package.swift nếu SPM) trước khi viết XCTest đầu tiên — đây là thay đổi cấu hình project, nêu rõ với người yêu cầu thay vì âm thầm thêm.
 
+## Chạy test đúng cách
+
+- Chạy đúng target/class/method đang sửa trước: `xcodebuild test -only-testing:<Target>/<Class>/<testMethod>` — không chạy full suite khi chỉ sửa 1 ViewModel.
+- Đọc dòng `error:`/`failed` đầu tiên trong output trước, đừng đọc hết log — Xcode in rất dài kể cả khi test pass.
+- Thêm `-resultBundlePath result.xcresult` khi cần xem chi tiết assertion/screenshot thất bại, mở bằng `open result.xcresult`.
+- XCUITest chỉ chạy khi task chạm flow end-to-end thật (không chạy kèm mỗi lần sửa unit nhỏ) — chi phí launch simulator cao.
+- Unit test (XCTest) phải pass trước khi chạy XCUITest — không chạy full UI suite khi logic cơ bản còn fail.
+
 ## Nguyên tắc
 
 Bug fix có branch/loop lỗi trong ViewModel/Service → viết XCTest tái hiện bug trước khi fix. ViewModel mới → test tối thiểu luồng thành công + luồng lỗi.

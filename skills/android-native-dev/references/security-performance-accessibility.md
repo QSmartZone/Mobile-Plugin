@@ -3,8 +3,8 @@
 ## Bảo mật dữ liệu nhạy cảm
 
 - Không log token/password/số thẻ/PII ra Logcat, kể cả debug build — log debug dễ lọt qua bản release nếu quên xoá hoặc quên gate theo `BuildConfig.DEBUG`, và Logcat có thể đọc được bởi app khác/tool debug trên thiết bị đã root.
-- Lưu bí mật (access token, API key, refresh token) bằng `EncryptedSharedPreferences` (Jetpack Security) hoặc Android Keystore trực tiếp — không dùng `SharedPreferences` thường (lưu plaintext, đọc được nếu thiết bị root hoặc qua backup).
-- Khai `android:allowBackup="false"` trong Manifest nếu app xử lý dữ liệu nhạy cảm — mặc định `allowBackup="true"` cho phép `adb backup` trích xuất toàn bộ dữ liệu app (kể cả SharedPreferences thường) mà không cần root.
+- Lưu bí mật (access token, API key, refresh token) bằng Android Keystore trực tiếp (`EncryptedFile`/Tink) hoặc DataStore mã hoá bằng key lưu trong Keystore — không dùng `SharedPreferences` thường (lưu plaintext). `EncryptedSharedPreferences` (Jetpack Security `security-crypto`) đã deprecated từ 2024, dự án đang dùng thì chưa cần migrate gấp nhưng code mới không nên thêm mới.
+- Khai `android:allowBackup="false"` trong Manifest nếu app xử lý dữ liệu nhạy cảm. Từ Android 12 (API 31), `adb backup` không lấy được data của app non-debuggable nữa — rủi ro thật là thiết bị root hoặc bị extract trực tiếp (không phải `adb backup` trên bản release thông thường).
 
 ## Hiệu năng cơ bản
 
@@ -26,4 +26,4 @@
 - `notifyDataSetChanged()` cho `RecyclerView` list lớn thay vì `DiffUtil` khi cập nhật list → giật lag rõ rệt mỗi lần update, đặc biệt list dài hoặc item phức tạp.
 - Thiếu `contentDescription` cho icon-only button (nút chỉ có icon, không text) → TalkBack đọc "Button" vô nghĩa, user khiếm thị không biết chức năng nút.
 - Touch target nhỏ hơn 48dp (icon 24dp không padding) → khó bấm chính xác, đặc biệt user vận động khó khăn hoặc màn hình nhỏ.
-- Để `allowBackup="true"` mặc định trên app xử lý dữ liệu nhạy cảm mà không set `false` hoặc `dataExtractionRules` → dữ liệu app (kể cả SharedPreferences thường) trích xuất được qua `adb backup` không cần root.
+- Để `allowBackup="true"` mặc định trên app xử lý dữ liệu nhạy cảm mà không set `false` hoặc `dataExtractionRules` → dữ liệu app (kể cả SharedPreferences thường) trích xuất được khi thiết bị root hoặc bị extract trực tiếp.

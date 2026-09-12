@@ -23,7 +23,7 @@ Dùng khi:
 - Business logic có nhiều state rõ ràng (loading/success/error/empty) cần test độc lập UI.
 - Luồng async phức tạp (debounce, race condition giữa nhiều event).
 
-Luôn dùng event class riêng cho mỗi thao tác (`*_event.dart`) và state class riêng (`*_state.dart`), kể cả màn hình đơn giản — nhất quán 1 pattern cho toàn bộ business logic trong project giúp mọi feature debug/test theo đúng 1 cách, không phải đoán feature nào theo pattern nào.
+State đơn giản, không cần transform/debounce event → dùng `Cubit` (method gọi trực tiếp, không cần event class riêng). Cần event class tách biệt, transform luồng event (debounce, race condition) → dùng `Bloc`. Theo đúng cái project đã dùng, không tự đổi giữa 2 pattern trong cùng feature.
 
 ```dart
 sealed class AuthState {}

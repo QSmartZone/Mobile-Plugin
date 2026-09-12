@@ -51,3 +51,11 @@ Nếu project gần như chưa có test nào (không có convention sẵn để 
 ## Nguyên tắc
 
 Bug fix có branch/loop lỗi → viết test tái hiện bug (fail trước khi fix). ViewModel mới → test tối thiểu 2 case: thành công + lỗi. Không test getter/setter hay Compose preview tĩnh không logic.
+
+## Chạy test đúng cách
+
+- Chạy đúng 1 class/method đang sửa bằng `--tests "<Class>"` hoặc `--tests "<Class>.<method>"`, không chạy cả module cho 1 thay đổi nhỏ.
+- Đọc dòng fail đầu tiên trong output trước — assertion đầu tiên fail thường là nguyên nhân gốc, các fail sau có thể chỉ là hệ quả.
+- `connectedAndroidTest` (Espresso/Compose UI test trên thiết bị) chỉ chạy khi task chạm UI — tốn thời gian, không chạy mặc định cho thay đổi logic thuần.
+- Không chạy full test suite trước khi unit test liên quan đã pass — fail nhanh, sửa, rồi mới chạy rộng hơn.
+- Gradle treo lúc resolve dependency (mạng chậm/không có) → thêm `--offline` nếu dependency đã có trong cache.

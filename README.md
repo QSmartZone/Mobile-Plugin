@@ -5,9 +5,14 @@ Plugin generic cho mobile dev (Flutter, Android native, iOS) — không dính bu
 ## Nội dung
 
 - `rules/hot_reload.md` — kết nối `dtd`/`hot_reload` sau mỗi lần sửa file Dart/Flutter.
+- `rules/mobile-common.md` — quy tắc chung mọi platform (soi project trước, giữ kiến trúc, test, verify).
+- `.mcp.json` — khai `dart mcp-server` (có sẵn trong Dart SDK, không cài thêm); hot reload/analyze/test qua MCP thay vì Bash thô. Project scope vẫn load `.mcp.json` ở root plugin. Cần Dart SDK ≥3.9 có lệnh `dart` trong PATH; project Android/iOS thuần không có Dart thì tắt server `dart` bằng `/mcp` hoặc bỏ qua lỗi spawn MCP mỗi session.
+- `scripts/detect-stack.sh` — detect platform + lib chính + lệnh test/analyze/build từ manifest, dùng bởi `/mobile-dev:verify`.
+- `commands/verify.md` (`/mobile-dev:verify`) — chạy detect-stack rồi analyze + test liên quan diff.
 - `skills/android-cli` — dùng CLI `android` (tạo project, chạy app, quản lý emulator, chụp screenshot, xem layout).
-- `skills/flutter-dev`, `skills/android-native-dev`, `skills/ios-dev` — convention theo platform.
-- `agents/flutter-expert.md`, `agents/android-native-expert.md`, `agents/ios-expert.md` — agent chuyên gia tương ứng.
+- `skills/flutter-dev`, `skills/android-native-dev`, `skills/ios-dev`, `skills/react-native-dev` — convention theo platform.
+- `skills/flutter-sdk-platform` — quản lý version Flutter SDK/platform.
+- `agents/flutter-expert.md`, `agents/android-native-expert.md`, `agents/ios-expert.md`, `agents/react-native-expert.md` — agent chuyên gia tương ứng.
 
 ## Cài đặt
 

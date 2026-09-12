@@ -18,9 +18,11 @@ WorkManager.getInstance(context).enqueue(request)
 
 ## Foreground Service
 
-Việc phải chạy ngay, user cần thấy đang chạy (nhạc, tracking vị trí, cuộc gọi) — bắt buộc notification hiển thị từ Android 8+ (API 26), cần khai báo `foregroundServiceType` trong Manifest từ Android 14 (API 34).
+Việc phải chạy ngay, user cần thấy đang chạy (nhạc, tracking vị trí, cuộc gọi) — bắt buộc notification hiển thị từ Android 8+ (API 26). Từ Android 14 (API 34), bắt buộc khai `android:foregroundServiceType` trong Manifest **và** xin permission `FOREGROUND_SERVICE_<TYPE>` tương ứng (ví dụ `FOREGROUND_SERVICE_LOCATION`) — thiếu 1 trong 2 là crash `MissingForegroundServiceTypeException`/`SecurityException` khi start service.
 
 ```xml
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
 <service
     android:name=".LocationTrackingService"
     android:foregroundServiceType="location" />
@@ -44,7 +46,7 @@ Với broadcast hệ thống khác (không phải network), vẫn đăng ký đ�
 
 ## Runtime permission flow
 
-Dùng `registerForActivityResult(ActivityResultContracts.RequestPermission())` thay vì `onRequestPermissionsResult` cũ.
+Dùng `registerForActivityResult(ActivityResultContracts.RequestPermission())` thay vì `onRequestPermissionsResult` cũ. Phải gọi `registerForActivityResult` trước khi Activity/Fragment qua trạng thái `STARTED` (khai báo lúc field init hoặc trong `onCreate`, không gọi trễ hơn trong click handler) — gọi muộn sẽ crash `IllegalStateException: LifecycleOwner ... is attempting to register while current state is ...`.
 
 ```kotlin
 val requestPermission = registerForActivityResult(
@@ -56,6 +58,7 @@ val requestPermission = registerForActivityResult(
 
 - Check `shouldShowRequestPermissionRationale()` để hiển thị giải thích trước khi xin lại quyền bị từ chối lần đầu.
 - Permission bị từ chối vĩnh viễn (denied + "Don't ask again") → hướng user sang Settings (`Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)`), không xin lại vô ích (hệ thống tự chặn, dialog không hiện nữa).
+- Android 13 (API 33): hiển thị notification cần xin runtime permission `POST_NOTIFICATIONS` (trước đó chỉ cần khai Manifest) — thiếu bước này thì notification (kể cả của foreground Service) không hiện, không crash nên dễ bỏ sót.
 
 ## Giới hạn background execution Android 8+ (API 26)
 

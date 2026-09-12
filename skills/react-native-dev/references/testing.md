@@ -59,3 +59,11 @@ appId: com.myapp
 - Mỗi bug fix cần thêm 1 test tái hiện bug trước khi fix (regression test), không chỉ sửa code rồi bỏ qua test.
 - Snapshot test dùng có chọn lọc — snapshot toàn bộ UI dễ trở thành "update snapshot" theo phản xạ mà không thật sự review đổi gì, ưu tiên assertion cụ thể hơn snapshot lớn.
 - Test không phụ thuộc thứ tự chạy hoặc state global còn sót từ test trước — mỗi test tự setup/cleanup (`beforeEach`/`afterEach`).
+
+## Chạy test đúng cách
+
+- Chạy đúng file/test cần: `npx jest path/to/file.test.tsx -t "tên test"`, không chạy cả suite khi chỉ sửa 1 chỗ.
+- Đọc dòng `●` báo fail đầu tiên trong output — đó là assertion thật sự sai, các dòng sau thường là hệ quả.
+- Không dùng `--watch` trong agent/CI — process không tự thoát, làm treo session.
+- Detox/Maestro chỉ chạy khi thay đổi chạm luồng E2E critical, không chạy mặc định mỗi lần sửa code.
+- Lỗi transform/module lạ không liên quan đến code vừa sửa → thử `npx jest --clearCache` trước khi debug sâu.

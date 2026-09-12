@@ -24,9 +24,13 @@ class AuthInterceptor(private val tokenProvider: () -> String) : Interceptor {
 
 Dùng `Resource`/`Result` (Loading/Success/Error) thay vì try-catch rải rác ở từng nơi gọi API.
 
+`runCatching` quanh suspend function nuốt luôn `CancellationException` (coroutine bị cancel bị coi như lỗi bình thường, phá cơ chế cancel của structured concurrency) — dùng try/catch, rethrow `CancellationException` trước khi catch chung, hoặc viết 1 helper `runSuspendCatching` làm việc này ở 1 chỗ thay vì lặp lại mỗi call site.
+
 ```kotlin
+import kotlinx.coroutines.CancellationException
+
 suspend fun getBooking(id: String): Resource<Booking> =
-    runCatching {
+    try {
         val resp = api.getBooking(id)
         if (resp.isSuccessful) {
             resp.body()?.let { Resource.Success(it.toDomain()) }
@@ -34,7 +38,11 @@ suspend fun getBooking(id: String): Resource<Booking> =
         } else {
             Resource.Error(resp.errorBody()?.string() ?: "HTTP ${resp.code()}")
         }
-    }.getOrElse { e -> Resource.Error(e.message ?: "Unknown error") }
+    } catch (e: CancellationException) {
+        throw e // không nuốt cancellation của coroutine
+    } catch (e: Exception) {
+        Resource.Error(e.message ?: "Unknown error")
+    }
 ```
 
 ## Phân biệt loại lỗi
@@ -57,5 +65,5 @@ Không tự thêm Room nếu project chưa cần query phức tạp — YAGNI.
 - Bắt `catch (e: Exception)` chung chung rồi show thẳng `e.message`/stack trace cho user — lộ chi tiết kỹ thuật, trải nghiệm kém.
 - Retry vô hạn không backoff khi network lỗi → tốn pin/data, có thể spam server.
 - Dùng `Response<T>` wrapper của Retrofit nhưng không check `response.isSuccessful` trước khi đọc `response.body()` — Retrofit không tự throw exception cho lỗi HTTP (4xx/5xx) khi dùng wrapper này, `body()` có thể null hoặc là data cũ dẫn tới `NullPointerException`/hiển thị sai.
-- Lưu token hoặc dữ liệu nhạy cảm bằng `SharedPreferences` thường thay vì `EncryptedSharedPreferences`/Keystore — dữ liệu đọc được trực tiếp trên device root/adb backup.
+- Lưu token hoặc dữ liệu nhạy cảm bằng `SharedPreferences` thường thay vì Android Keystore — dữ liệu đọc được trực tiếp khi thiết bị root/bị extract. `EncryptedSharedPreferences` (thư viện `security-crypto`) đã deprecated từ 2024 — dự án mới nên dùng Keystore trực tiếp (`EncryptedFile`/Tink) hoặc DataStore mã hoá bằng key lưu trong Keystore; dự án đang dùng `EncryptedSharedPreferences` thì chưa cần migrate gấp.
 - Không set timeout cho `OkHttpClient` (dùng default hoặc quên set) → request treo lâu khi mạng chập chờn, UI kẹt ở trạng thái Loading vô thời hạn.

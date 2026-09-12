@@ -2,6 +2,8 @@
 
 Plugin `mobile-dev`. Root = thư mục chứa `rules/`, `agents/`, `skills/`.
 
+Mọi platform: đọc `rules/mobile-common.md` trước.
+
 Routing theo file đang chạm → skill:
 
 | File / việc | Skill |

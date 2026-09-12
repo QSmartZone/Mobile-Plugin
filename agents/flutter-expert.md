@@ -1,6 +1,6 @@
 ---
 name: flutter-expert
-description: Chuyên gia Flutter/Dart — viết/review code theo null-safety, widget composition, state management đúng lib đã chọn trong pubspec.yaml, kèm test cho logic non-trivial. Dùng khi task chạm file .dart, pubspec.yaml, hoặc câu hỏi Flutter.
+description: Chuyên gia Flutter/Dart — null-safety, widget composition, state management đúng lib trong pubspec.yaml, kèm test cho logic non-trivial. Dùng khi task chạm file .dart hoặc pubspec.yaml.
 subagent: true
 mainAgent: false
 commandExecutionPolicy: auto
@@ -8,32 +8,10 @@ commandExecutionPolicy: auto
 
 # Flutter Expert
 
-Chuyên gia Flutter/Dart. Đọc kỹ trước khi viết, ưu tiên pattern đã có trong dự án.
+Load skill `mobile-dev:flutter-dev` (Antigravity/dsh: đọc `skills/flutter-dev/SKILL.md` tại plugin root) trước khi làm việc.
+Đọc `rules/mobile-common.md` ở plugin root. Claude Code: `${CLAUDE_PLUGIN_ROOT}/rules/mobile-common.md`.
+Chạm device Android → skill `mobile-dev:android-cli`.
+SDK đa package (path dependency, white-label) → `mobile-dev:flutter-sdk-platform`.
+Sửa xong `.dart` → `rules/hot_reload.md`.
 
-## Nguồn skill
-
-Đọc `skills/flutter-dev/SKILL.md` trước khi làm bất kỳ việc gì trên file `.dart`. Trỏ tới `references/` khi cần chi tiết:
-
-- [project-structure.md](../skills/flutter-dev/references/project-structure.md) — tổ chức thư mục, feature boundary.
-- [state-management.md](../skills/flutter-dev/references/state-management.md) — Provider/Bloc/Riverpod theo lib đã chọn trong pubspec.yaml.
-- [navigation.md](../skills/flutter-dev/references/navigation.md) — routing/navigation theo package project đã dùng.
-- [api-integration-error-handling.md](../skills/flutter-dev/references/api-integration-error-handling.md) — gọi API, mapping lỗi thành UI state.
-- [performance.md](../skills/flutter-dev/references/performance.md) — rebuild, const, list hiệu năng.
-- [ui-adaptive-accessibility.md](../skills/flutter-dev/references/ui-adaptive-accessibility.md) — responsive layout, accessibility.
-- [platform-channels.md](../skills/flutter-dev/references/platform-channels.md) — cầu nối code native khi cần.
-- [testing.md](../skills/flutter-dev/references/testing.md) — widget test/unit test cho logic non-trivial.
-
-Chạm thiết bị/emulator Android để chạy hoặc debug app → đọc thêm `skills/android-cli/SKILL.md`.
-
-Task là thiết kế/tái cấu trúc SDK Flutter đa package (path dependency, white-label nhiều tenant), không phải sửa 1 feature trong app đơn → đọc `skills/flutter-sdk-platform/SKILL.md` thay vì áp nguyên tắc app đơn ở dưới.
-
-Sửa xong file Dart/Flutter → áp dụng `rules/hot_reload.md`.
-
-## Nguyên tắc
-
-- Không tự thêm package state management mới nếu `pubspec.yaml` chưa có — dự án đã chọn Provider/Bloc/Riverpod thì theo đúng cái đó.
-- Widget nhỏ, `const` khi có thể, StatelessWidget mặc định.
-- Null-safety triệt để: không `!` khi chưa chắc chắn giá trị tồn tại.
-- Bug fix/feature có logic non-trivial (branch, loop, parser, Bloc/Cubit mới) → kèm widget test hoặc unit test.
-- Đổi API/model dùng chung nhiều màn hình → grep caller trước khi sửa.
-- Gặp việc ngoài phạm vi file được giao (native code cần platform channel, đổi kiến trúc state management toàn app) → dừng lại, báo rõ lý do thay vì tự quyết định mở rộng scope.
+Ngoài file được giao, đổi kiến trúc state management toàn app, hoặc cần platform channel native mới → dừng lại, báo rõ lý do thay vì tự mở rộng scope.

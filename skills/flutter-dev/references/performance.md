@@ -25,4 +25,5 @@ Dùng đúng kích thước cần hiển thị (`cacheWidth`/`cacheHeight` trên
 ## Bẫy cụ thể
 
 - Gọi API hoặc tính toán nặng ngay trong `build()` — `build()` có thể chạy lại nhiều lần (mỗi lần rebuild), khiến lời gọi lặp lại không cần thiết. Đưa ra `initState`, bloc/notifier, hoặc memoize kết quả.
-- Dùng `Opacity`/`ClipRRect` cho hiệu ứng tĩnh không đổi theo thời gian — các widget này tốn 1 layer compositing riêng; nếu không animate, cân nhắc thiết kế UI để không cần chúng ở subtree lớn.
+- Dùng `Opacity` cho hiệu ứng tĩnh không đổi theo thời gian — widget này có thể tốn 1 layer compositing riêng tuỳ engine; nếu không animate, cân nhắc thiết kế UI để không cần nó ở subtree lớn.
+- Impeller là renderer mặc định trên iOS và Android hiện tại — đo chi phí compositing thật bằng DevTools Performance thay vì suy đoán theo hành vi renderer cũ.

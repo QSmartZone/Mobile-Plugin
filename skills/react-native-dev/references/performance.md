@@ -2,11 +2,15 @@
 
 ## Đo trước khi tối ưu
 
-Dùng React DevTools Profiler hoặc Flipper để xác định component nào re-render thừa/tốn thời gian trước khi thêm `useMemo`/`useCallback`/`React.memo` — memoization tùy tiện làm code khó đọc hơn mà nhiều khi không đổi gì vì chi phí so sánh dependency còn tốn hơn re-render.
+Dùng React Native DevTools (RN ≥0.76, phím `j` trong Metro; RN 0.73 đã bỏ Flipper) để xác định component nào re-render thừa/tốn thời gian trước khi thêm `useMemo`/`useCallback`/`React.memo` — memoization tùy tiện làm code khó đọc hơn mà nhiều khi không đổi gì vì chi phí so sánh dependency còn tốn hơn re-render.
 
 ## Hermes engine
 
-Hermes là JS engine mặc định cho cả iOS/Android từ React Native 0.70+ — bytecode precompile giúp startup nhanh hơn JSC. Kiểm tra đã bật trong `android/app/build.gradle` (`hermesEnabled true`) và `ios/Podfile` (`:hermes_enabled => true`) nếu project cũ chưa migrate; không tắt Hermes trừ khi có thư viện native cụ thể chưa tương thích (hiếm ở bản mới).
+Hermes là JS engine mặc định cho cả iOS/Android từ React Native 0.70+ — bytecode precompile giúp startup nhanh hơn JSC. Kiểm tra đã bật trong `android/gradle.properties` (`hermesEnabled=true`, từ RN 0.71 chuyển từ `build.gradle` sang đây) và `ios/Podfile` (`:hermes_enabled => true`) nếu project cũ chưa migrate; không tắt Hermes trừ khi có thư viện native cụ thể chưa tương thích (hiếm ở bản mới).
+
+## New Architecture (Fabric/TurboModules)
+
+New Architecture là default cho project mới từ RN 0.76. Từ RN 0.82, legacy architecture bị bỏ hẳn — thư viện native chưa hỗ trợ Fabric/TurboModule sẽ vỡ khi upgrade lên 0.82+, kiểm tra changelog lib trước khi upgrade.
 
 ## List dài: FlatList/FlashList, không `.map()`
 

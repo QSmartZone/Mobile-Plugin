@@ -28,6 +28,7 @@ View (SwiftUI) → ViewModel (@Observable) → Service/Repository → Network/DB
 
 ```swift
 @Observable
+@MainActor
 final class BookingListViewModel {
     private(set) var state: BookingUiState = .loading
     private let repo: BookingRepository
@@ -55,6 +56,8 @@ enum BookingUiState {
 ```
 
 `@Observable` (Swift 5.9+/iOS 17+) thay `ObservableObject` + `@Published` khi dự án đủ điều kiện deployment target — ít boilerplate hơn, chỉ re-render property thực sự đổi thay vì cả object.
+
+`@MainActor` trên class bắt buộc khi property mutate từ hàm `async` được gọi từ context không phải main (Task background, callback network) — thiếu nó, Swift 6 strict concurrency báo lỗi biên dịch "Main actor-isolated property ... cannot be mutated from a non-isolated context" thay vì crash runtime âm thầm như trước.
 
 ## Swift Concurrency thay GCD
 

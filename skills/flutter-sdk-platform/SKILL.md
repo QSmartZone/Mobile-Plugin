@@ -1,6 +1,6 @@
 ---
 name: flutter-sdk-platform
-description: Cách thiết kế một Flutter SDK đa package (pub packages liên kết bằng path dependency), white-label (một codebase, nhiều customer/tenant clone) — package layering, composition seam, config/secrets boundary, theming/terminology, contract-first verification. Dùng khi task là "xây SDK Flutter cho nhiều app dùng chung", "tách package Dart/Flutter", "thiết kế kiến trúc SDK Flutter", hoặc review 1 SDK Flutter đa package đã có. Đặc thù Dart/Flutter (pubspec.yaml, depend_on_referenced_packages, Dio) — SDK native Android/iOS đọc references nhưng tự đổi thuật ngữ tương ứng. Tổng quát hoá từ 1 SDK Flutter 7-package thực chiến — không dùng cho app đơn lẻ 1 mục đích.
+description: Kiến trúc Flutter SDK đa package (path dependency), white-label nhiều tenant — layering, composition seam, config/secrets, theming. Dùng khi thiết kế/tách SDK Flutter đa package. Không dùng cho app đơn lẻ 1 mục đích.
 ---
 
 # Flutter SDK Platform Architecture

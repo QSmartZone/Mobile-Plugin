@@ -114,15 +114,30 @@ config.timeoutIntervalForResource = 30
 let session = URLSession(configuration: config)
 ```
 
-Retry có giới hạn số lần + backoff, không retry vô hạn:
+Retry có giới hạn số lần + backoff, và **chỉ retry lỗi transient** (timeout, mất kết nối, HTTP 5xx) — không retry lỗi 4xx (sai input/token hết hạn, retry lại vẫn fail y hệt) hay khi bị hủy:
 
 ```swift
 func withRetry<T>(times: Int = 3, operation: () async throws -> T) async throws -> T {
     precondition(times > 0, "times must be > 0")
     for attempt in 0..<times {
         do { return try await operation() }
+        catch let error as CancellationError { throw error } // không retry khi Task bị hủy
         catch {
-            if attempt == times - 1 { throw error }
+            let isTransient: Bool
+            switch error {
+            case let urlError as URLError:
+                isTransient = [.timedOut, .notConnectedToInternet, .networkConnectionLost].contains(urlError.code)
+            case let apiError as APIError:
+                if case .http(let status, _) = apiError {
+                    isTransient = status >= 500
+                } else {
+                    isTransient = false
+                }
+            default:
+                isTransient = false
+            }
+            guard isTransient, attempt < times - 1 else { throw error }
+            try Task.checkCancellation() // dừng ngay nếu bị hủy giữa các lần retry
             try await Task.sleep(nanoseconds: UInt64(pow(2.0, Double(attempt))) * 1_000_000_000)
         }
     }

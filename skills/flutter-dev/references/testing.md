@@ -34,6 +34,14 @@ Bloc, use case, parser, mapper JSON→model: test tách khỏi widget, dùng `bl
 
 Dùng package `integration_test`, chạy trên thiết bị/emulator thật — cho golden path end-to-end (login → tạo booking → thanh toán). Chi phí chạy cao hơn nhiều so với widget test, chỉ cover flow quan trọng nhất, không thay thế widget test.
 
+## Chạy test đúng cách
+
+- Chạy 1 file: `flutter test test/x_test.dart` — không chạy full suite khi chỉ sửa 1 chỗ.
+- Chạy 1 case cụ thể: `flutter test test/x_test.dart --plain-name "tên test"`.
+- Test fail: đọc dòng fail đầu tiên + expected/actual, không đoán nguyên nhân từ tên test.
+- Full suite (`flutter test`) chỉ chạy trước khi báo xong task, không chạy mỗi lần sửa nhỏ.
+- `integration_test` không chạy khi chỉ sửa logic thuần (không đổi UI flow/thiết bị thật).
+
 ## Nguyên tắc
 
 Bug fix có branch/loop/parser bị lỗi → viết ít nhất 1 test tái hiện lỗi trước khi fix (fail → fix → pass). Không viết test cho getter/setter/UI tĩnh không logic.

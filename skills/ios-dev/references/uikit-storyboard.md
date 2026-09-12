@@ -1,5 +1,15 @@
 # UIKit/Storyboard — chi tiết
 
+## Bẫy cụ thể
+
+- Tên `@IBOutlet`/`@IBAction` trong code lệch với Storyboard sau khi rename → crash `NSUnknownKeyException` lúc runtime, không phát hiện lúc build.
+- `prepare(for:)` không check `segue.identifier` khi có nhiều segue ra từ cùng 1 view controller → gán nhầm data.
+- Truyền data giữa 2 màn hình qua singleton/global mutable state thay vì property trên `destination` — 2 instance cùng màn hình đọc/ghi đè state của nhau.
+- Quên `dequeueReusableCell` hoặc quên reset state trong `prepareForReuse()` → cell hiện sai data khi scroll.
+- Đăng ký observer/notification ở `viewDidLoad()` nhưng không unregister ở `deinit`/`viewWillDisappear()` (khi cần theo từng lần appear) → nhận callback dù màn hình đã đóng, hoặc leak.
+- Closure completion handler capture `self` strong trong view controller có vòng đời ngắn (dismiss sớm trong khi request đang chạy) → retain cycle, `self` không deinit đúng lúc.
+- Update UIKit view từ background thread không qua `DispatchQueue.main.async` → UI không refresh hoặc crash không tái hiện ổn định.
+
 ## UIViewController lifecycle
 
 Thứ tự gọi khi 1 màn hình xuất hiện/biến mất:
@@ -10,9 +20,7 @@ loadView() → viewDidLoad()
   → viewWillDisappear() → viewDidDisappear()
 ```
 
-- `viewDidLoad()`: chạy đúng 1 lần khi view được load vào memory — setup 1 lần (đăng ký `IBOutlet`, cấu hình `UITableView.delegate`/`dataSource`, đăng ký observer/notification).
-- `viewWillAppear()`/`viewDidAppear()`: chạy mỗi lần màn hình xuất hiện lại (kể cả quay lại từ màn khác qua pop) — chỗ để refresh data, chứ không phải setup 1 lần.
-- `viewWillDisappear()`/`viewDidDisappear()`: cleanup theo cặp với appear — huỷ timer, dừng animation, unregister observer nếu đăng ký ở appear.
+`viewDidLoad()` chạy đúng 1 lần (setup outlet/delegate/observer); `viewWillAppear`/`viewDidAppear` chạy lại mỗi lần màn hình xuất hiện (chỗ refresh data, không phải setup); `viewWillDisappear`/`viewDidDisappear` cleanup theo cặp (huỷ timer, unregister observer).
 
 ## IBOutlet / IBAction
 
@@ -112,13 +120,3 @@ DispatchQueue.main.async {
 ```
 
 Mọi thao tác UIKit (`reloadData`, set text, animation) phải chạy trên main thread — gọi từ background thread (network callback thô chưa dispatch, `DispatchQueue.global`) gây UI update không hiển thị ngay hoặc crash không nhất quán (`UIKit is only safe to use from the main thread`), không phải lỗi luôn crash ngay lập tức nên dễ bị bỏ sót khi test.
-
-## Bẫy cụ thể
-
-- Tên `@IBOutlet`/`@IBAction` trong code lệch với Storyboard sau khi rename → crash `NSUnknownKeyException` lúc runtime, không phát hiện lúc build.
-- `prepare(for:)` không check `segue.identifier` khi có nhiều segue ra từ cùng 1 view controller → gán nhầm data.
-- Truyền data giữa 2 màn hình qua singleton/global mutable state thay vì property trên `destination` — 2 instance cùng màn hình đọc/ghi đè state của nhau.
-- Quên `dequeueReusableCell` hoặc quên reset state trong `prepareForReuse()` → cell hiện sai data khi scroll.
-- Đăng ký observer/notification ở `viewDidLoad()` nhưng không unregister ở `deinit`/`viewWillDisappear()` (khi cần theo từng lần appear) → nhận callback dù màn hình đã đóng, hoặc leak.
-- Closure completion handler capture `self` strong trong view controller có vòng đời ngắn (dismiss sớm trong khi request đang chạy) → retain cycle, `self` không deinit đúng lúc.
-- Update UIKit view từ background thread không qua `DispatchQueue.main.async` → UI không refresh hoặc crash không tái hiện ổn định.

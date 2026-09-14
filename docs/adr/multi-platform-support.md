@@ -12,7 +12,7 @@ Khác biệt so với team-plugin:
 1. **Không có hook** — bỏ hẳn `hooks.json`, `overlay_agy_hooks`, node prereq check trong `install.sh`.
 2. **Thêm chọn scope user/project** — team-plugin chỉ cài user scope (global: `~/.claude`, `~/.gemini/config/plugins`, `~/.agents`). `mobile-plugin/install.sh` hỏi thêm scope trước khi cài:
    - `user` — giống team-plugin, cài vào thư mục global của host.
-   - `project` — cài vào đúng project đang đứng (`$PWD` lúc gọi `./install.sh`). Với Claude: `claude plugin marketplace add <path> --scope project` rồi `claude plugin install mobile-dev@mobile --scope project` (CLI `claude` hỗ trợ sẵn `-s/--scope user|project|local`). Với agy/dsh: copy core vào `$PWD/.agents` thay vì thư mục global của host.
+   - `project` — cài vào đúng project đang đứng (`$PWD` lúc gọi `./install.sh`). Với Claude: `claude plugin marketplace add <path> --scope project` rồi `claude plugin install mobile-dev@mobile --scope project` (CLI `claude` hỗ trợ sẵn `-s/--scope user|project|local`). Với agy/dsh: không host nào nạp plugin từ `<project>/.agents/<plugin>/` hay `<project>/.dsh/AGENTS.md`, nên project scope ghi đúng layout cả hai host cùng đọc, chạy 1 lần chung: skill → `.agents/skills/<name>/` (Antigravity + dsh), rule → `.agents/rules/*.md` (Antigravity, cần frontmatter `trigger:`; `.agents/AGENTS.md` của repo thành `mobile-dev.md` với `trigger: always_on`), `commands/verify.md` → `.agents/workflows/verify.md` (Antigravity), 1 block pointer trong `<project>/AGENTS.md` (dsh + Antigravity). subagent `agents/*.md` → `.agents/agents/<name>.md` (Antigravity ≥2.0, 2026-08; dsh không có subagent). Nguồn: antigravity.google/docs/skills, dsh skill roots `.dsh/skills` + `.agents/skills`, instruction từ `AGENTS.md`/`CLAUDE.md` ở root repo.
 
 ## Why
 

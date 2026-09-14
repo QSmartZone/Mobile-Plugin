@@ -1,6 +1,6 @@
 ---
 name: flutter-dev
-description: Convention Flutter/Dart — widget, state management, cấu trúc lib/, routing, API/error handling, performance, test. Dùng khi sửa .dart/pubspec.yaml. SDK đa package/white-label → dùng flutter-sdk-platform.
+description: "Convention Flutter/Dart — widget, state management, cấu trúc lib/, routing, API/error handling, performance, test. Dùng khi sửa .dart/pubspec.yaml. SDK đa package/white-label → dùng flutter-sdk-platform."
 ---
 
 # Flutter Dev Specialist

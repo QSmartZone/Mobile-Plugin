@@ -1,6 +1,6 @@
 ---
 name: flutter-sdk-platform
-description: Kiến trúc Flutter SDK đa package (path dependency), white-label nhiều tenant — layering, composition seam, config/secrets, theming. Dùng khi thiết kế/tách SDK Flutter đa package. Không dùng cho app đơn lẻ 1 mục đích.
+description: "Kiến trúc Flutter SDK đa package (path dependency), white-label nhiều tenant — layering, composition seam, config/secrets, theming. Dùng khi thiết kế/tách SDK Flutter đa package. Không dùng cho app đơn lẻ 1 mục đích."
 ---
 
 # Flutter SDK Platform Architecture

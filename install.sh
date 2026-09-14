@@ -9,7 +9,6 @@
 #   --project: thư mục project đích cho scope=project (mặc định: thư mục đang đứng; hỏi nếu đang đứng trong repo này).
 set -eu
 
-MARKER=".mobile-plugin" # ghi vào mọi thư mục installer sở hữu; không có marker thì không đè
 # Core = mọi thứ trừ danh sách này. File riêng của host: .claude-plugin/ (Claude), .agents/ (Antigravity, dsh).
 SKIP=".git .history .polaris .DS_Store node_modules __pycache__ docs .agents .claude .claude-plugin"
 
@@ -167,7 +166,7 @@ skipped() {
   return 1
 }
 
-# Thay `dst` bằng bản copy đã lọc của `src`. Chỉ đè thư mục có MARKER. In kết quả ra stdout.
+# Thay `dst` bằng bản copy đã lọc của `src` (đè thẳng nếu đã có). In kết quả ra stdout.
 copy_dir() {
   src=$1; dst=$2
   if [ -L "$dst" ]; then
@@ -180,7 +179,6 @@ copy_dir() {
   existed=0
   if [ -e "$dst" ]; then
     [ -d "$dst" ] || { echo "lỗi: $dst không phải thư mục, gỡ tay"; return 0; }
-    [ -f "$dst/$MARKER" ] || { echo "lỗi: $dst không do installer tạo, gỡ tay"; return 0; }
     existed=1
   fi
   if [ "$DRY_RUN" = 1 ]; then
@@ -195,7 +193,6 @@ copy_dir() {
     cp -R "$entry" "$dst/"
   done
   find "$dst" \( -name __pycache__ -o -name .DS_Store \) -prune -exec rm -rf {} + 2>/dev/null || true
-  echo "installed by mobile-plugin install.sh" > "$dst/$MARKER"
   [ "$existed" = 1 ] && echo "đã copy đè" || echo "đã copy"
 }
 
@@ -234,14 +231,25 @@ install_claude() {
   # scope=project: các lệnh claude phải chạy với cwd = project đang đứng để CLI ghi cấu hình đúng chỗ.
   run_claude() { if [ "$SCOPE" = project ]; then ( cd "$PROJECT_DIR" && "$bin" "$@" ); else "$bin" "$@"; fi; }
 
+  # `plugin list` in mọi entry của mọi project; lọc theo scope + projectPath để không nhận nhầm bản cài ở project khác.
+  claude_installed() {
+    run_claude plugin list --json 2>/dev/null |
+      awk -v want_scope="$SCOPE" -v want_path="${PROJECT_DIR:-}" '
+        /"id":/ { id = $0 } /"scope":/ { sc = $0 } /"projectPath":/ { pp = $0 }
+        /^ *}/ { if (id ~ /"mobile-dev@mobile"/ && sc ~ "\"" want_scope "\"" &&
+                     (want_scope != "project" || pp ~ "\"" want_path "\"")) found = 1
+                 id = sc = pp = "" }
+        END { exit !found }'
+  }
+
   log claude "claude plugin list (scope=$SCOPE)"
-  if run_claude plugin list 2>/dev/null | grep -q 'mobile-dev@mobile'; then
+  if claude_installed; then
     [ "$DRY_RUN" = 1 ] && { echo "đã cài — sẽ hỏi update"; return 0; }
     confirm "[claude] mobile-dev@mobile ($SCOPE) đã cài. Update lên bản mới?" || { echo "đã cài, bỏ qua"; return 0; }
     log claude "claude plugin marketplace update mobile"
     run_claude plugin marketplace update mobile || { echo "lỗi: marketplace update thất bại"; return 0; }
-    log claude "claude plugin update mobile-dev@mobile"
-    out=$(run_claude plugin update mobile-dev@mobile 2>&1) || { printf '%s\n' "$out"; echo "lỗi: plugin update thất bại"; return 0; }
+    log claude "claude plugin update mobile-dev@mobile --scope $SCOPE"
+    out=$(run_claude plugin update mobile-dev@mobile --scope "$SCOPE" -y 2>&1) || { printf '%s\n' "$out"; echo "lỗi: plugin update thất bại"; return 0; }
     printf '%s\n' "$out"
     if printf '%s' "$out" | grep -qi 'latest version'; then
       echo "đã ở bản mới nhất — quên bump version trong .claude-plugin/plugin.json?"
@@ -260,11 +268,10 @@ install_claude() {
 }
 
 install_agy() {
-  dst_root=$([ "$SCOPE" = project ] && echo "$PROJECT_DIR/.agents" || echo "$AGY_PLUGINS_USER")
   bin=$(agy_bin)
-  if [ -n "$bin" ] && [ "$SCOPE" = user ]; then
-    # Dựng bản copy đã lọc để agy không kéo .git/.history vào thư mục plugin của nó. Chỉ dùng cho user scope
-    # (agy CLI cài vào thư mục global của nó; project scope ghi thẳng ra $PROJECT_DIR/.agents bằng copy_dir bên dưới).
+  if [ -n "$bin" ]; then
+    # Dựng bản copy đã lọc để agy không kéo .git/.history vào thư mục plugin của nó (user scope only —
+    # project scope đi qua install_project_agents vì Antigravity không nạp plugin từ <project>/.agents/<name>/).
     log agy "agy plugin install <bản lọc của $REPO_ROOT>"
     [ "$DRY_RUN" = 1 ] && { echo "sẽ cài qua agy"; return 0; }
     tmp=$(mktemp -d "${TMPDIR:-/tmp}/mobile-plugin.XXXXXX")
@@ -281,8 +288,8 @@ install_agy() {
     rm -rf "$tmp"
     echo "$out"; return 0
   fi
-  dst="$dst_root/mobile-dev"
-  log agy "copy $REPO_ROOT -> $dst (scope=$SCOPE)"
+  dst="$AGY_PLUGINS_USER/mobile-dev"
+  log agy "copy $REPO_ROOT -> $dst"
   res=$(copy_dir "$REPO_ROOT" "$dst")
   case $res in
     lỗi*) : ;;
@@ -294,58 +301,84 @@ install_agy() {
   echo "$res"
 }
 
-install_dsh() {
-  skills_root=$([ "$SCOPE" = project ] && echo "$PROJECT_DIR/.agents/skills" || echo "$HOME_DIR/.agents/skills")
-  plugin_root=$([ "$SCOPE" = project ] && echo "$PROJECT_DIR/.agents/mobile-dev" || echo "$HOME_DIR/.agents/mobile-dev")
-  agents_md=$([ "$SCOPE" = project ] && echo "$PROJECT_DIR/.dsh/AGENTS.md" || echo "$DSH_DIR/AGENTS.md")
+# Thay/append block <!-- mobile-plugin --> trong file $1 với nội dung $2. In kết quả ra stdout.
+write_block() {
+  f=$1; open="<!-- mobile-plugin -->"; close="<!-- /mobile-plugin -->"
+  if [ "$DRY_RUN" = 1 ]; then
+    if [ -f "$f" ] && grep -qF "$open" "$f"; then echo "sẽ cập nhật $(basename -- "$f")"; else echo "sẽ append $(basename -- "$f")"; fi
+    return 0
+  fi
+  mkdir -p "$(dirname -- "$f")"
+  had=0
+  if [ -f "$f" ] && grep -qF "$open" "$f"; then
+    had=1
+    # BSD awk không nhận -v chứa newline, nên xoá block cũ rồi append block mới thay vì thay tại chỗ.
+    awk -v o="$open" -v c="$close" '$0 == o { s = 1; next } s { if ($0 == c) s = 0; next } { print }' \
+      "$f" > "$f.new" && mv "$f.new" "$f"
+  fi
+  if [ -s "$f" ] && [ -n "$(tail -c 1 "$f")" ]; then printf '\n' >> "$f"; fi
+  printf '%s\n%s\n%s\n' "$open" "$2" "$close" >> "$f"
+  [ "$had" = 1 ] && echo "đã cập nhật $(basename -- "$f")" || echo "đã append $(basename -- "$f")"
+}
 
+# Gộp danh sách kết quả "; a; a; b" thành "2x a; b" (giữ thứ tự gặp đầu); có lỗi thì chỉ in lỗi.
+summarize() {
+  errs=$(printf '%s' "$1" | tr ';' '\n' | grep '^ *lỗi' || true)
+  if [ -n "$errs" ]; then printf '%s' "$errs" | tr '\n' ';' ; echo; else
+    printf '%s' "$1" | tr ';' '\n' |
+      awk 'NF { sub(/^ +/, ""); if (!($0 in c)) o[++k] = $0; c[$0]++ }
+           END { for (i = 1; i <= k; i++) printf "%s%s%s", (i > 1 ? "; " : ""), (c[o[i]] > 1 ? c[o[i]] "x " : ""), o[i]; print "" }'
+  fi
+}
+
+install_dsh() {
   results=""
   for skill in "$REPO_ROOT"/skills/*/; do
     [ -d "$skill" ] || continue
     name=$(basename -- "$skill")
-    dst="$skills_root/$name"
-    log dsh "copy ${skill%/} -> $dst (scope=$SCOPE)"
+    dst="$HOME_DIR/.agents/skills/$name"
+    log dsh "copy ${skill%/} -> $dst"
     results="$results; $(copy_dir "${skill%/}" "$dst")"
   done
-  log dsh "copy $REPO_ROOT -> $plugin_root (scope=$SCOPE)"
+  plugin_root="$HOME_DIR/.agents/mobile-dev"
+  log dsh "copy $REPO_ROOT -> $plugin_root"
   plugin_res=$(copy_dir "$REPO_ROOT" "$plugin_root")
   results="$results; $plugin_res"
   case $plugin_res in
     lỗi*) : ;;
     *) [ "$DRY_RUN" = 0 ] && cp "$REPO_ROOT/.agents/AGENTS.md" "$plugin_root/rules/AGENTS.md" || true ;;
   esac
+  log dsh "block mobile-plugin trong $DSH_DIR/AGENTS.md"
+  results="$results; $(write_block "$DSH_DIR/AGENTS.md" "Mobile plugin root: $plugin_root — read $plugin_root/rules/AGENTS.md first.")"
+  summarize "$results"
+}
 
-  open="<!-- mobile-plugin -->"; close="<!-- /mobile-plugin -->"
-  log dsh "block mobile-plugin trong $agents_md"
-  block="$open
-Mobile plugin root: $plugin_root — read $plugin_root/rules/AGENTS.md first.
-$close"
-  if [ "$DRY_RUN" = 1 ]; then
-    if [ -f "$agents_md" ] && grep -qF "$open" "$agents_md"; then
-      results="$results; sẽ cập nhật AGENTS.md"
-    else
-      results="$results; sẽ append AGENTS.md"
-    fi
-  else
-    mkdir -p "$(dirname -- "$agents_md")"
-    had=0
-    if [ -f "$agents_md" ] && grep -qF "$open" "$agents_md"; then
-      had=1
-      # BSD awk không nhận -v chứa newline, nên xoá block cũ rồi append block mới thay vì thay tại chỗ.
-      awk -v o="$open" -v c="$close" '$0 == o { s = 1; next } s { if ($0 == c) s = 0; next } { print }' \
-        "$agents_md" > "$agents_md.new" && mv "$agents_md.new" "$agents_md"
-    fi
-    if [ -s "$agents_md" ] && [ -n "$(tail -c 1 "$agents_md")" ]; then printf '\n' >> "$agents_md"; fi
-    printf '%s\n' "$block" >> "$agents_md"
-    [ "$had" = 1 ] && results="$results; đã cập nhật AGENTS.md" || results="$results; đã append AGENTS.md"
+# scope=project — dùng chung cho agy + dsh, chạy 1 lần. Cả hai host chỉ đọc ở project:
+#   skill: <project>/.agents/skills/<name>/ (agy + dsh)
+#   rule:  <project>/.agents/rules/*.md (agy, cần frontmatter trigger:) + <project>/AGENTS.md (dsh + agy)
+#   workflow: <project>/.agents/workflows/*.md (agy); subagent: <project>/.agents/agents/<name>.md (agy, Antigravity ≥2.0)
+# Không host nào đọc <project>/.agents/<plugin>/ hay <project>/.dsh/AGENTS.md.
+install_project_agents() {
+  host=$1; root="$PROJECT_DIR/.agents"
+  results=""
+  for skill in "$REPO_ROOT"/skills/*/; do
+    [ -d "$skill" ] || continue
+    name=$(basename -- "$skill")
+    log "$host" "copy ${skill%/} -> $root/skills/$name"
+    results="$results; $(copy_dir "${skill%/}" "$root/skills/$name")"
+  done
+  log "$host" "rules/*.md + .agents/AGENTS.md -> $root/rules/; commands/verify.md -> $root/workflows/; agents/*.md -> $root/agents/"
+  if [ "$DRY_RUN" = 1 ]; then results="$results; sẽ ghi rules+workflows+agents"; else
+    mkdir -p "$root/rules" "$root/workflows" "$root/agents"
+    cp "$REPO_ROOT"/rules/*.md "$root/rules/"
+    { printf -- '---\ntrigger: always_on\n---\n'; cat "$REPO_ROOT/.agents/AGENTS.md"; } > "$root/rules/mobile-dev.md"
+    cp "$REPO_ROOT/commands/verify.md" "$root/workflows/verify.md"
+    cp "$REPO_ROOT"/agents/*.md "$root/agents/"
+    results="$results; đã ghi rules+workflows+agents"
   fi
-  errs=$(printf '%s' "$results" | tr ';' '\n' | grep '^ *lỗi' || true)
-  if [ -n "$errs" ]; then printf '%s' "$errs" | tr '\n' ';' ; echo; else
-    # Mỗi skill trả cùng một kết quả; gộp dòng trùng thành "<n>x <kết quả>", giữ thứ tự gặp đầu.
-    printf '%s' "$results" | tr ';' '\n' |
-      awk 'NF { sub(/^ +/, ""); if (!($0 in c)) o[++k] = $0; c[$0]++ }
-           END { for (i = 1; i <= k; i++) printf "%s%s%s", (i > 1 ? "; " : ""), (c[o[i]] > 1 ? c[o[i]] "x " : ""), o[i]; print "" }'
-  fi
+  log "$host" "block mobile-plugin trong $PROJECT_DIR/AGENTS.md"
+  results="$results; $(write_block "$PROJECT_DIR/AGENTS.md" "Mobile plugin (project scope): read .agents/rules/mobile-dev.md first; rules in .agents/rules/, skills in .agents/skills/.")"
+  summarize "$results"
 }
 
 # ---- main ----
@@ -402,14 +435,19 @@ fi
 
 FAILED=0
 ROWS=""
+PROJECT_AGENTS_BY=""
 for k in $CHOSEN; do
   if ! present "$k"; then ROWS="$ROWS$k|không|không phát hiện
 "; continue; fi
   log "$k" "bắt đầu"
   case $k in
     claude) res=$(install_claude) ;;
-    agy) res=$(install_agy) ;;
-    dsh) res=$(install_dsh) ;;
+    agy|dsh)
+      if [ "$SCOPE" = project ]; then
+        if [ -n "$PROJECT_AGENTS_BY" ]; then res="đã cài chung với $PROJECT_AGENTS_BY"
+        else res=$(install_project_agents "$k"); PROJECT_AGENTS_BY=$k; fi
+      elif [ "$k" = agy ]; then res=$(install_agy)
+      else res=$(install_dsh); fi ;;
   esac
   # install_* in log ra stdout lẫn kết quả; lấy dòng cuối làm kết quả, in phần còn lại.
   printf '%s\n' "$res" | sed '$d'

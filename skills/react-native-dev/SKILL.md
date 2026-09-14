@@ -1,6 +1,6 @@
 ---
 name: react-native-dev
-description: Convention React Native — Expo vs bare, state management, navigation, performance, testing, native module. Dùng khi chạm file .tsx/.jsx RN, app.json/app.config.js, hoặc câu hỏi React Native. Không dùng khi: web React thuần, Flutter, native thuần.
+description: "Convention React Native — Expo vs bare, state management, navigation, performance, testing, native module. Dùng khi chạm file .tsx/.jsx RN, app.json/app.config.js, hoặc câu hỏi React Native. Không dùng khi: web React thuần, Flutter, native thuần."
 ---
 
 # React Native Dev Specialist

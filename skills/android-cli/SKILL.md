@@ -1,6 +1,6 @@
 ---
 name: android-cli
-description: Dùng CLI `android` để tạo project Android, cài SDK, chạy app, quản lý emulator, chụp screenshot, xem layout UI, tra docs. Dùng khi cần thao tác thiết bị/emulator hoặc build-run APK. Không dùng khi: viết code Kotlin (đó là android-native-dev).
+description: "Dùng CLI `android` để tạo project Android, cài SDK, chạy app, quản lý emulator, chụp screenshot, xem layout UI, tra docs. Dùng khi cần thao tác thiết bị/emulator hoặc build-run APK. Không dùng khi: viết code Kotlin (đó là android-native-dev)."
 ---
 # Android CLI Specialist
 

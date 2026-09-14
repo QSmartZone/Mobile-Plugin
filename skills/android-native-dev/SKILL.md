@@ -1,6 +1,6 @@
 ---
 name: android-native-dev
-description: Convention Android native (Kotlin, MVVM, Compose/View, DI, coroutines, lifecycle, testing). Dùng khi sửa file .kt/.java, build.gradle trong module Android. Không dùng khi cần chạy trên device/emulator, dùng skill android-cli.
+description: "Convention Android native (Kotlin, MVVM, Compose/View, DI, coroutines, lifecycle, testing). Dùng khi sửa file .kt/.java, build.gradle trong module Android. Không dùng khi cần chạy trên device/emulator, dùng skill android-cli."
 ---
 
 # Android Native Dev Specialist

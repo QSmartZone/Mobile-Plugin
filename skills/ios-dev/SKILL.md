@@ -1,6 +1,6 @@
 ---
 name: ios-dev
-description: Convention iOS native (SwiftUI/UIKit/Storyboard theo tiền lệ project) — kiến trúc, Swift Concurrency, API/error handling, platform capability, testing. Dùng khi chạm file .swift/.storyboard/.xib. Không dùng khi: viết Flutter/React Native (skill tương ứng).
+description: "Convention iOS native (SwiftUI/UIKit/Storyboard theo tiền lệ project) — kiến trúc, Swift Concurrency, API/error handling, platform capability, testing. Dùng khi chạm file .swift/.storyboard/.xib. Không dùng khi: viết Flutter/React Native (skill tương ứng)."
 ---
 
 # iOS Dev Specialist

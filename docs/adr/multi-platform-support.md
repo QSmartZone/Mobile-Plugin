@@ -1,30 +1,30 @@
-# ADR — Đa nền tảng: tái dùng pattern team-plugin, thêm scope user/project
+# ADR — Multi-platform: reuse the team-plugin pattern, add user/project scope
 
 ## Context
 
-`mobile-plugin` cần chạy được trên nhiều host giống `team-plugin` (repo chị em cùng `self-project/core`), thay vì chỉ Claude Code. Không muốn nghĩ lại từ đầu 1 pattern đã kiểm chứng.
+`mobile-plugin` needs to run on multiple hosts like `team-plugin` (sibling repo in `self-project/core`), not just Claude Code. We do not want to rethink a pattern that is already proven.
 
 ## Decision
 
-Tái dùng nguyên pattern **core + overlay** của team-plugin: 3 host — Claude Code/Desktop, Antigravity IDE + `agy`, DeepSeek Harness `dsh`. Core (`agents/ skills/ rules/`) không chứa manifest host nào; phần riêng host ở `.claude-plugin/` (Claude) và `.agents/` (Antigravity + dsh). Cài bằng **copy**, không symlink.
+Reuse team-plugin's **core + overlay** pattern as is: 3 hosts — Claude Code/Desktop, Antigravity IDE + `agy`, DeepSeek Harness `dsh`. Core (`agents/ skills/ rules/`) contains no host manifest; host-specific parts live in `.claude-plugin/` (Claude) and `.agents/` (Antigravity + dsh). Install by **copy**, not symlink.
 
-Khác biệt so với team-plugin:
-1. **Không có hook** — bỏ hẳn `hooks.json`, `overlay_agy_hooks`, node prereq check trong `install.sh`.
-2. **Thêm chọn scope user/project** — team-plugin chỉ cài user scope (global: `~/.claude`, `~/.gemini/config/plugins`, `~/.agents`). `mobile-plugin/install.sh` hỏi thêm scope trước khi cài:
-   - `user` — giống team-plugin, cài vào thư mục global của host.
-   - `project` — cài vào đúng project đang đứng (`$PWD` lúc gọi `./install.sh`). Với Claude: `claude plugin marketplace add <path> --scope project` rồi `claude plugin install mobile-dev@mobile --scope project` (CLI `claude` hỗ trợ sẵn `-s/--scope user|project|local`). Với agy/dsh: không host nào nạp plugin từ `<project>/.agents/<plugin>/` hay `<project>/.dsh/AGENTS.md`, nên project scope ghi đúng layout cả hai host cùng đọc, chạy 1 lần chung: skill → `.agents/skills/<name>/` (Antigravity + dsh), rule → `.agents/rules/*.md` (Antigravity, cần frontmatter `trigger:`; `.agents/AGENTS.md` của repo thành `mobile-dev.md` với `trigger: always_on`), `commands/verify.md` → `.agents/workflows/verify.md` (Antigravity), 1 block pointer trong `<project>/AGENTS.md` (dsh + Antigravity). subagent `agents/*.md` → `.agents/agents/<name>.md` (Antigravity ≥2.0, 2026-08; dsh không có subagent). Nguồn: antigravity.google/docs/skills, dsh skill roots `.dsh/skills` + `.agents/skills`, instruction từ `AGENTS.md`/`CLAUDE.md` ở root repo.
+Differences from team-plugin:
+1. **No hooks** — drop `hooks.json`, `overlay_agy_hooks`, and the node prereq check in `install.sh`.
+2. **Add user/project scope choice** — team-plugin only installs at user scope (global: `~/.claude`, `~/.gemini/config/plugins`, `~/.agents`). `mobile-plugin/install.sh` additionally asks for scope before installing:
+   - `user` — same as team-plugin, installs into the host's global directory.
+   - `project` — installs into the project you are standing in (`$PWD` when `./install.sh` is called). For Claude: `claude plugin marketplace add <path> --scope project` then `claude plugin install mobile-dev@mobile --scope project` (the `claude` CLI already supports `-s/--scope user|project|local`). For agy/dsh: neither host loads plugins from `<project>/.agents/<plugin>/` or `<project>/.dsh/AGENTS.md`, so project scope writes the layout both hosts read, in one shared run: skill → `.agents/skills/<name>/` (Antigravity + dsh), rule → `.agents/rules/*.md` (Antigravity, needs frontmatter `trigger:`; the repo's `.agents/AGENTS.md` becomes `mobile-dev.md` with `trigger: always_on`), `commands/verify.md` → `.agents/workflows/verify.md` (Antigravity), 1 pointer block in `<project>/AGENTS.md` (dsh + Antigravity). Subagent `agents/*.md` → `.agents/agents/<name>.md` (Antigravity ≥2.0, 2026-08; dsh has no subagents). Sources: antigravity.google/docs/skills, dsh skill roots `.dsh/skills` + `.agents/skills`, instructions from `AGENTS.md`/`CLAUDE.md` at the repo root.
 
 ## Why
 
-Nhiều project mobile riêng biệt (khác team/khách hàng) không phải lúc nào cũng muốn cài skill này global — project scope cho phép bật/tắt theo từng repo mà không ảnh hưởng cấu hình user-level dùng cho project khác.
+Separate mobile projects (different teams/customers) do not always want this skill installed globally — project scope lets it be toggled per repo without affecting the user-level config used by other projects.
 
 ## Trade-offs
 
-Sửa `mobile-plugin` xong, các bản đã cài theo project scope ở project khác phải chạy lại `./install.sh --scope project` riêng từng nơi — không tự động đồng bộ như user scope (chỉ 1 chỗ).
+After editing `mobile-plugin`, copies installed at project scope in other projects must rerun `./install.sh --scope project` in each place separately — they do not sync automatically like user scope (a single place).
 
 ## Constraints
 
-- Không hook nào trong plugin này.
-- `agents/*.md` KHÔNG khai `tools:` trong frontmatter (Antigravity strict tên tool lạ).
-- Không thêm host thứ 4 ngoài Claude/agy/dsh.
-- `install.sh` là POSIX shell, không dependency ngoài coreutils/git; cho project scope, `claude plugin marketplace add` phải chạy với `source` là đường dẫn tuyệt đối tới thư mục `mobile-plugin` (không phải symlink) để tránh lỗi resolve khi cwd của lệnh khác cwd của plugin gốc.
+- No hooks in this plugin.
+- `agents/*.md` must NOT declare `tools:` in the frontmatter (Antigravity is strict about unknown tool names).
+- Do not add a 4th host beyond Claude/agy/dsh.
+- `install.sh` is POSIX shell, no dependencies beyond coreutils/git; for project scope, `claude plugin marketplace add` must run with `source` as the absolute path to the `mobile-plugin` directory (not a symlink) to avoid resolve errors when the command's cwd differs from the original plugin's cwd.

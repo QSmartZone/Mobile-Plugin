@@ -1,0 +1,8 @@
+{
+  "name": "mobile-flutter",
+  "version": "0.4.0",
+  "description": "Flutter/Dart: skill flutter-dev + flutter-sdk-platform, agent flutter-expert, Dart MCP server, /verify (analyze + live preview).",
+  "author": { "name": "Quyen Chau", "email": "ctuanquyen97@gmail.com" },
+  "license": "UNLICENSED",
+  "keywords": ["flutter", "dart", "mobile"]
+}

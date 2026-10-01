@@ -1,0 +1,8 @@
+{
+  "name": "mobile-rn",
+  "version": "0.4.0",
+  "description": "React Native: skill react-native-dev, agent react-native-expert.",
+  "author": { "name": "Quyen Chau", "email": "ctuanquyen97@gmail.com" },
+  "license": "UNLICENSED",
+  "keywords": ["react-native", "mobile"]
+}

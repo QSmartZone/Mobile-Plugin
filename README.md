@@ -1,54 +1,74 @@
 # mobile-plugin
 
-Plugin generic cho mobile dev (Flutter, Android native, iOS) — không dính business logic của project cụ thể nào.
+Generic plugin for mobile dev (Flutter, Android native, iOS) — no business logic of any specific project.
 
-## Nội dung
+## Contents
 
-- `rules/hot_reload.md` — kết nối `dtd`/`hot_reload` sau mỗi lần sửa file Dart/Flutter.
-- `rules/mobile-common.md` — quy tắc chung mọi platform (soi project trước, giữ kiến trúc, test, verify).
-- `.mcp.json` — khai `dart mcp-server` (có sẵn trong Dart SDK, không cài thêm); hot reload/analyze/test qua MCP thay vì Bash thô. Project scope vẫn load `.mcp.json` ở root plugin. Cần Dart SDK ≥3.9 có lệnh `dart` trong PATH; project Android/iOS thuần không có Dart thì tắt server `dart` bằng `/mcp` hoặc bỏ qua lỗi spawn MCP mỗi session.
-- `scripts/detect-stack.sh` — detect platform + lib chính + lệnh test/analyze/build từ manifest, dùng bởi `/mobile-dev:verify`.
-- `commands/verify.md` (`/mobile-dev:verify`) — chạy detect-stack rồi analyze + test liên quan diff.
-- `skills/android-cli` — dùng CLI `android` (tạo project, chạy app, quản lý emulator, chụp screenshot, xem layout).
-- `skills/flutter-dev`, `skills/android-native-dev`, `skills/ios-dev`, `skills/react-native-dev` — convention theo platform.
-- `skills/flutter-sdk-platform` — quản lý version Flutter SDK/platform.
-- `agents/flutter-expert.md`, `agents/android-native-expert.md`, `agents/ios-expert.md`, `agents/react-native-expert.md` — agent chuyên gia tương ứng.
+Split into 4 sub-plugins — a project enables only the plugin for its own stack, so skill/agent listings of other platforms do not take up context.
 
-## Cài đặt
+| Plugin | Skill | Agent | Other |
+| --- | --- | --- | --- |
+| `mobile-flutter` | `flutter-dev`, `flutter-sdk-platform` | `flutter-expert` | Dart MCP (`.mcp.json`), `/mobile-flutter:verify` |
+| `mobile-android` | `android-native-dev`, `android-cli` | `android-native-expert` | |
+| `mobile-ios` | `ios-dev` | `ios-expert` | |
+| `mobile-rn` | `react-native-dev` | `react-native-expert` | |
 
-### Tự động, mọi host phát hiện được trên máy
-
-```sh
-./install.sh                          # hỏi scope + host qua menu
-./install.sh --scope project --project ~/dev/my-app   # cài vào project chỉ định
-cd ~/dev/my-app && /path/to/mobile-plugin/install.sh --scope project   # hoặc đứng trong project mà gọi
-./install.sh --scope project          # đứng trong repo plugin thì script hỏi path project
-./install.sh --scope user             # cài global cho user
-./install.sh --dry-run                # xem sẽ làm gì, không đổi gì trên đĩa
-./install.sh --only claude            # chỉ cài Claude, bỏ qua agy/dsh
+```
+plugins/mobile-<pack>/
+├── .claude-plugin/plugin.json
+├── rules/<platform>.md     # per-platform: flutter.md, android.md, ...
+├── skills/  agents/  commands/
 ```
 
-Sửa repo xong: Claude cập nhật qua marketplace (`claude plugin update mobile-dev@mobile`); Antigravity/dsh là bản copy nên chạy lại `./install.sh` với đúng scope đã dùng lần trước.
+Rules are not shared across platforms: touch targets, null-safety, network errors, and verify commands differ per stack (e.g. Flutter `!` + `mounted`, Kotlin `!!`, Swift `as!`/`try!`, RN `res.ok`).
 
-### Claude Code / Desktop — tay
+- `/mobile-flutter:verify` — analyze (`analyze_files` or `flutter analyze`) → connect to the app via `dtd` (if not running, `flutter --print-dtd run`) → `hot_reload` → `get_runtime_errors` → `widget_inspector`/`flutter_driver_command`. Does not run `flutter test`.
+- Tests: follow the target project's policy (`AGENTS.md`/`CLAUDE.md`). The plugin does not write/run tests when the project forbids them.
+- Dart MCP needs Dart SDK ≥3.9 (tool names per SDK 3.13: `dtd`, `hot_reload`, `hot_restart`, `get_runtime_errors`, `widget_inspector`, `flutter_driver_command`, `analyze_files`).
+
+### Notes for plugin developers
+
+- Agent frontmatter has `subagent`, `mainAgent`, `commandExecutionPolicy` — keys for Antigravity/dsh. Claude Code ignores them; this is not an error.
+- `CLAUDE.md` and `docs/` at the root are not loaded when using the plugin — they are for plugin editors only.
+- Measure context cost: `claude --plugin-dir plugins/mobile-flutter plugin details mobile-flutter` (mobile-flutter ~154 tokens always-on; old merged bundle ~622).
+
+## Installation
+
+### Automatic, every host detected on the machine
 
 ```sh
-# user scope (mặc định của claude CLI)
-claude plugin marketplace add /Users/ctquyen/Documents/project/self-project/core/mobile-plugin --scope user
-claude plugin install mobile-dev@mobile --scope user
+./install.sh                          # asks pack + scope + host via menu
+./install.sh --pack flutter --scope project --project ~/dev/my-app   # only mobile-flutter into the given project
+cd ~/dev/my-app && /path/to/mobile-plugin/install.sh --scope project   # or call it from inside the project
+./install.sh --scope project          # inside the plugin repo, the script asks for the project path
+./install.sh --scope user             # global install for the user
+./install.sh --dry-run                # show what would happen, change nothing on disk
+./install.sh --only claude            # install Claude only, skip agy/dsh
+```
 
-# project scope — chạy 2 lệnh trên trong chính thư mục project muốn dùng plugin
+After editing the repo: Claude updates via marketplace (`claude plugin update mobile-flutter@mobile`); Antigravity/dsh receive one `mobile-dev` plugin merging the selected packs (a copy), so rerun `./install.sh` with the same `--pack` + scope as last time.
+
+Upgrading from the merged `mobile-dev` ≤0.3.x: `claude plugin uninstall mobile-dev@mobile --scope <scope>`, then install the sub-plugins you need.
+
+### Claude Code / Desktop — manual
+
+```sh
+# user scope (claude CLI default)
+claude plugin marketplace add /Users/ctquyen/Documents/project/self-project/core/mobile-plugin --scope user
+claude plugin install mobile-flutter@mobile --scope user   # or mobile-android / mobile-ios / mobile-rn
+
+# project scope — run the 2 commands above inside the project directory that will use the plugin
 cd /path/to/your-project
 claude plugin marketplace add /Users/ctquyen/Documents/project/self-project/core/mobile-plugin --scope project
-claude plugin install mobile-dev@mobile --scope project
+claude plugin install mobile-flutter@mobile --scope project
 ```
 
 ### Antigravity IDE (`agy`)
 
 ```sh
-agy plugin install /Users/ctquyen/Documents/project/self-project/core/mobile-plugin
+./install.sh --only agy --pack flutter --scope user   # agy needs the merged bundle, not the repo directly
 ```
 
-## Đa nền tảng
+## Multi-platform
 
-Hỗ trợ 3 host: Claude Code/Desktop, Antigravity IDE + `agy`, DeepSeek Harness `dsh`. Xem `docs/adr/multi-platform-support.md` cho quyết định kiến trúc (core + overlay, copy-not-symlink, scope user/project).
+Supports 3 hosts: Claude Code/Desktop, Antigravity IDE + `agy`, DeepSeek Harness `dsh`. See `docs/adr/multi-platform-support.md` for the architecture decision (core + overlay, copy-not-symlink, user/project scope).

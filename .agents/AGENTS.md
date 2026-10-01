@@ -1,18 +1,18 @@
 # mobile-dev — always-on
 
-Plugin `mobile-dev`. Root = thư mục chứa `rules/`, `agents/`, `skills/`.
+Plugin `mobile-dev` (merged bundle of the packs chosen at `install.sh --pack`). Root = the directory containing `rules/`, `agents/`, `skills/`. A skill missing from `skills/` means its pack is not installed; ignore that row.
 
-Mọi platform: đọc `rules/mobile-common.md` trước.
+Read the rule for the platform of the file you are touching first: `rules/flutter.md`, `rules/android.md`, `rules/ios.md`, `rules/react-native.md` (only files of installed packs exist).
 
-Routing theo file đang chạm → skill:
+Routing by touched file → skill. Flutter verify: workflow `verify` (analyze + live preview via Dart MCP); do not run `flutter test` when the project forbids tests.
 
-| File / việc | Skill |
+| File / task | Skill |
 | --- | --- |
-| `*.dart`, `pubspec.yaml` | `flutter-dev` (kèm `rules/hot_reload.md` sau mỗi lần sửa) |
-| Thiết kế/tái cấu trúc SDK Flutter đa package, white-label nhiều tenant | `flutter-sdk-platform` |
-| `*.kt`, `*.java` (module Android) | `android-native-dev` |
+| `*.dart`, `pubspec.yaml` | `flutter-dev` (plus `rules/hot_reload.md` after every edit) |
+| Designing/restructuring a multi-package Flutter SDK, multi-tenant white-label | `flutter-sdk-platform` |
+| `*.kt`, `*.java` (Android module) | `android-native-dev` |
 | `*.swift`, `*.storyboard`, `*.xib` | `ios-dev` |
-| Cần chạy/build/debug thiết bị Android, chụp screenshot, xem layout | `android-cli` |
-| `*.tsx`, `*.jsx` (React Native project — có `metro.config.js`/`app.json` Expo) | `react-native-dev` |
+| Running/building/debugging an Android device, taking screenshots, inspecting layout | `android-cli` |
+| `*.tsx`, `*.jsx` (React Native project — has `metro.config.js`/`app.json` Expo) | `react-native-dev` |
 
-Không có tool hỏi có cấu trúc → hỏi thẳng trong chat, gom ≤4 câu/lượt.
+No structured-question tool → ask directly in chat, batching ≤4 questions per turn.

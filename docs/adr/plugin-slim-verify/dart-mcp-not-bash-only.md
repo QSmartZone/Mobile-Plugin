@@ -1,23 +1,23 @@
-# ADR — Dart MCP server, không chỉ Bash
+# ADR — Dart MCP server, not Bash only
 
 ## Context
 
-`rules/hot_reload.md` gọi tool `dtd`/`hot_reload` nhưng plugin không khai MCP server nào → trên Claude Code rule trỏ vào tool không tồn tại, model nhỏ dễ bịa tool.
+`rules/hot_reload.md` calls the `dtd`/`hot_reload` tools but the plugin declares no MCP server → on Claude Code the rule points at tools that do not exist, and small models easily invent tools.
 
 ## Decision
 
-Thêm `.mcp.json` ở root plugin khai `dart mcp-server` (stdio, có sẵn trong Dart SDK ≥3.9, không package ngoài). Rule hot_reload gọi đúng tên tool MCP và có fallback "không có tool/app → bỏ qua, báo 1 dòng".
+Add `.mcp.json` at the plugin root declaring `dart mcp-server` (stdio, built into Dart SDK ≥3.9, no external package). The hot_reload rule calls the exact MCP tool names and has a fallback "no tool/app → skip, report in 1 line".
 
 ## Why
 
-Đóng vòng analyze/test/hot_reload/runtime error bằng tool thay vì Bash parse output. Plugin cài project scope vẫn load `.mcp.json` root plugin; `install.sh` copy dotfile nên agy/dsh nhận file.
+Close the analyze/test/hot_reload/runtime-error loop with tools instead of parsing Bash output. A plugin installed at project scope still loads the plugin-root `.mcp.json`; `install.sh` copies dotfiles so agy/dsh receive the file.
 
 ## Trade-offs
 
-Máy không có `dart` trong PATH → server fail khởi động, Claude báo lỗi MCP 1 lần mỗi session. Chấp nhận: plugin mobile mặc định có Flutter SDK.
+A machine without `dart` in PATH → the server fails to start, and Claude reports an MCP error once per session. Accepted: a mobile plugin assumes the Flutter SDK by default.
 
 ## Constraints
 
-- `.mcp.json` chỉ 1 server `dart`, command `dart`, args `["mcp-server"]`, không path tuyệt đối.
-- Không thêm hook (giữ constraint [multi-platform-support](../multi-platform-support.md)).
-- Rule hot_reload: frontmatter có cả `paths:` (Claude) và `globs:` (Antigravity); luôn có bước fallback khi thiếu tool.
+- `.mcp.json` has exactly 1 server `dart`, command `dart`, args `["mcp-server"]`, no absolute path.
+- Do not add hooks (keep the [multi-platform-support](../multi-platform-support.md) constraint).
+- hot_reload rule: frontmatter has both `paths:` (Claude) and `globs:` (Antigravity); always has a fallback step when a tool is missing.

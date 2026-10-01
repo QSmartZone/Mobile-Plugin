@@ -1,23 +1,23 @@
-# ADR — Agent mỏng, không xoá
+# ADR — Thin agents, not removed
 
 ## Context
 
-4 file `agents/*-expert.md` lặp 80-90% nội dung `skills/*/SKILL.md` (danh sách references + nguyên tắc). Sửa 1 rule phải sửa 2 chỗ. Trên Claude Code, link tương đối `../skills/...` trong subagent không resolve được.
+The 4 `agents/*-expert.md` files repeat 80-90% of `skills/*/SKILL.md` (reference list + principles). Changing one rule means editing two places. On Claude Code, relative `../skills/...` links inside a subagent cannot be resolved.
 
 ## Decision
 
-Giữ 4 agent, thân ≤80 từ: 1 dòng gọi skill theo tên plugin-qualified (`mobile-dev:<skill>`) + 3-4 dòng scope-stop riêng của vai. Không liệt kê references, không lặp nguyên tắc.
+Keep the 4 agents with a body ≤80 words: 1 line invoking the skill by its plugin-qualified name (`mobile-dev:<skill>`) + 3-4 lines of role-specific scope-stops. Do not list references, do not repeat principles.
 
 ## Why
 
-Antigravity/dsh spawn subagent theo `agents/<role>.md`; xoá agent là mất `invoke_subagent` theo vai trên 2 host đó.
+Antigravity/dsh spawn subagents by `agents/<role>.md`; removing an agent loses role-based `invoke_subagent` on those 2 hosts.
 
 ## Trade-offs
 
-Agent không tự đủ; phải load skill mới có kiến thức. Chấp nhận vì skill là nguồn sự thật duy nhất.
+An agent is not self-sufficient; it must load the skill to get knowledge. Accepted because the skill is the single source of truth.
 
 ## Constraints
 
-- Agent body ≤80 từ, không có mục "Nguồn skill" liệt kê references.
-- Frontmatter giữ 5 key hiện có, KHÔNG `tools:` (theo [multi-platform-support](../multi-platform-support.md)).
-- Trỏ skill bằng tên `mobile-dev:<skill>`, không đường dẫn tương đối.
+- Agent body ≤80 words, no "Skill sources" section listing references.
+- Frontmatter keeps the 5 existing keys, NO `tools:` (per [multi-platform-support](../multi-platform-support.md)).
+- Point to the skill by name `mobile-dev:<skill>`, not by relative path.

@@ -1,15 +1,14 @@
 {
   "name": "mobile",
-  "description": "Marketplace cá nhân cho plugin mobile dev generic (Flutter/Android native/iOS), tách biệt business logic từng project.",
+  "description": "Personal marketplace for generic mobile dev plugins, split by platform: enable only the plugin for your project's stack.",
   "owner": {
     "name": "Quyen Chau",
     "email": "ctuanquyen97@gmail.com"
   },
   "plugins": [
-    {
-      "name": "mobile-dev",
-      "source": "./",
-      "description": "Generic mobile dev toolkit: rule hot-reload cho Dart/Flutter, skill android-cli, skill Flutter/Android-native/iOS/React Native, agent chuyên gia flutter-expert/android-native-expert/ios-expert/react-native-expert, mobile-common rule, Dart MCP server, /verify command. Không dính business logic của project cụ thể nào. Multi-platform: Claude Code/Desktop, Antigravity IDE + agy, DeepSeek Harness dsh; hỗ trợ cài user scope hoặc project scope."
-    }
+    { "name": "mobile-flutter", "source": "./plugins/mobile-flutter", "description": "Flutter/Dart: skill, agent, Dart MCP, /verify analyze + live preview." },
+    { "name": "mobile-android", "source": "./plugins/mobile-android", "description": "Android native: skill android-native-dev + android-cli, agent." },
+    { "name": "mobile-ios", "source": "./plugins/mobile-ios", "description": "iOS native: skill ios-dev, agent ios-expert." },
+    { "name": "mobile-rn", "source": "./plugins/mobile-rn", "description": "React Native: skill react-native-dev, agent." }
   ]
 }

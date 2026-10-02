@@ -1,6 +1,6 @@
 # Adaptive UI & accessibility — details
 
-This is the minimum baseline for an ordinary app, not a full accessibility audit (WCAG AAA, testing with real TalkBack/VoiceOver) — that is beyond this skill's scope and needs a separate request.
+This is the minimum baseline for an ordinary app, not a full accessibility audit (WCAG AAA, checks with real TalkBack/VoiceOver) — that is beyond this skill's scope and needs a separate request.
 
 ## Responsive layout
 
@@ -20,7 +20,7 @@ Touch targets (buttons, tappable icons) at least 48x48dp — smaller is hard to 
 
 Specific pitfall: a bare `GestureDetector` wrapping a `Container`/`Padding` without `Semantics` or without `InkWell`/`Material` — to the eye it taps fine, but a screen reader does not recognize it as an interactive element at all (cannot focus, cannot be read). Prefer `InkWell`/`ElevatedButton`/widgets with built-in semantics over hand-building a bare `GestureDetector` for tap behavior.
 
-Text scale: respect the OS `MediaQuery.textScaler` instead of hardcoding a non-scaling `fontSize` — users enabling "large text" in system settings is a real accessibility need, not a rare edge case. Quick test: raise the text scale in the device/emulator Settings and see whether the layout overflows/clips text.
+Text scale: respect the OS `MediaQuery.textScaler` instead of hardcoding a non-scaling `fontSize` — users enabling "large text" in system settings is a real accessibility need, not a rare edge case. Quick check: raise the text scale in the device/emulator Settings and see whether the layout overflows/clips text.
 
 ## When mandatory, when not
 

@@ -10,7 +10,7 @@ UI (Compose/View) → ViewModel → Repository → DataSource (network/DB/cache)
 - **ViewModel**: exposes `StateFlow<UiState>` (or `LiveData` if the existing project uses View), calls the Repository via coroutines in `viewModelScope`. Does not hold `Context`, `View`, or UI lifecycle references.
 - **Repository**: single source of truth for one kind of data, decides whether to fetch from cache or network, knows nothing about the UI.
 
-  **When a Repository is NOT needed**: a small/thin-MVVM app that works fine, where the ViewModel calls the service (Retrofit) directly via a shared helper (e.g. `BaseViewModel.launchApi`) — do not add a Repository layer just because it is "the proper architecture". Add one only for a concrete need: multiple data sources for the same kind of data, caching needed, or tests needing a fake data source independent of the network.
+  **When a Repository is NOT needed**: a small/thin-MVVM app that works fine, where the ViewModel calls the service (Retrofit) directly via a shared helper (e.g. `BaseViewModel.launchApi`) — do not add a Repository layer just because it is "the proper architecture". Add one only for a concrete need: multiple data sources for the same kind of data, or caching needed.
 - **DataSource**: Retrofit/Ktor for network, Room for local DB.
 
 ## ViewModel example

@@ -16,7 +16,7 @@ Project has ViewModel for only a few features, the rest are Controllers without 
 
 ## When to add a new layer
 
-Do not add Coordinator/Clean Architecture/TCA to a project running MVC or simple MVVM just because it is "the proper architecture". Add only for a concrete need: complex navigation with many branching flows (→ Coordinator), multiple data sources/need to test domain logic independent of UI (→ Clean Architecture layer), complex state needing pure side-effects and easily reproducible tests (→ TCA) — and that is an architecture decision to state clearly, not to fold into a small bug fix.
+Do not add Coordinator/Clean Architecture/TCA to a project running MVC or simple MVVM just because it is "the proper architecture". Add only for a concrete need: complex navigation with many branching flows (→ Coordinator), multiple data sources/domain logic shared independent of UI (→ Clean Architecture layer), complex state needing pure, reproducible side-effects (→ TCA) — and that is an architecture decision to state clearly, not to fold into a small bug fix.
 
 ## Layers (default MVVM for a new project/one with no existing pattern)
 
@@ -77,7 +77,7 @@ Task {
 
 ## Dependency injection
 
-Simple constructor injection (as in the example above: `init(repo:)` with default `.live` for production, overridden in tests) — enough for most iOS apps, no separate DI framework needed unless the app is very large with many teams.
+Simple constructor injection (as in the example above: `init(repo:)` with default `.live` for production, overridden for previews) — enough for most iOS apps, no separate DI framework needed unless the app is very large with many teams.
 
 ## Navigation
 

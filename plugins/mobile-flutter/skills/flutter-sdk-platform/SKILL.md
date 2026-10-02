@@ -22,7 +22,7 @@ Reference source: a 7-package Flutter SDK (5 domain packages + 2 role bundles) s
 | 2. Composition seam — where the logic connecting 2 packages lives | [composition-and-session.md](references/composition-and-session.md) | May a domain package know another domain package exists? Who opens the HTTP client/session? |
 | 3. Config & secrets boundary | [white-label-config.md](references/white-label-config.md) | How do secrets/endpoints enter the SDK? What mechanism changes theme/copy per tenant, instead of scattered if/else? |
 | 4. Contract with a backend that does not exist yet | [contract-and-legacy-port.md](references/contract-and-legacy-port.md) | What does the SDK follow while the backend is unfinished? Is there legacy code (old app, old SDK) to reference, and how to port it? |
-| 5. Verify when there is no (or not yet a) reference app | [verification-strategy.md](references/verification-strategy.md) | What level of testing, and what is the trade-off of dropping package-level tests? |
+| 5. Verify | [verification-strategy.md](references/verification-strategy.md) | How to verify packages with analyze + live preview on a host app + review, and what that misses? |
 
 Read only the reference matching the current work — do not read all 5 files for a small change in an existing package.
 

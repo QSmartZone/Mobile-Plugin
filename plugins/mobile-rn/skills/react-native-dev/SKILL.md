@@ -39,11 +39,11 @@ Details: [references/state-management.md](references/state-management.md).
 
 ## References
 
-[expo-vs-bare](references/expo-vs-bare.md) · [project-structure](references/project-structure.md) · [navigation](references/navigation.md) · [api-integration-error-handling](references/api-integration-error-handling.md) · [performance](references/performance.md) · [ui-adaptive-accessibility](references/ui-adaptive-accessibility.md) · [testing](references/testing.md) · [native-modules](references/native-modules.md) · [troubleshoot](references/troubleshoot.md)
+[expo-vs-bare](references/expo-vs-bare.md) · [project-structure](references/project-structure.md) · [navigation](references/navigation.md) · [api-integration-error-handling](references/api-integration-error-handling.md) · [performance](references/performance.md) · [ui-adaptive-accessibility](references/ui-adaptive-accessibility.md) · [native-modules](references/native-modules.md) · [troubleshoot](references/troubleshoot.md)
 
 ## Verify
 
 - `tsc --noEmit` clean.
 - `eslint` clean, no arbitrary rule disabling.
-- `npx jest <path>` for related files.
+- Live preview: Fast Refresh on the running app, open the edited screen, no red box/LogBox error.
 - `npx expo run:ios|android` or `npx react-native run-android` when touching native.

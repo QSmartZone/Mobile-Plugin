@@ -13,10 +13,6 @@ description: General Android native (Kotlin/Java) rules
 **Keep the architecture:**
 - Do not migrate Java→Kotlin, View→Compose, or change DI unless explicitly requested.
 
-**Tests — follow project policy:**
-- Read the project's `AGENTS.md`/`CLAUDE.md` first. Project forbids tests → do not write them, do not run `./gradlew test*`.
-- No policy: logic with a branch, loop, or parser → propose 1 unit test, ask the user before running.
-
 **Network errors:**
 - Activity/Fragment/Composable must not call the API directly; go through repository + ViewModel.
 - Distinguish network errors (`IOException`), HTTP errors (`HttpException`), parse errors (serialization), business errors.
@@ -31,4 +27,6 @@ description: General Android native (Kotlin/Java) rules
 
 **Verify before reporting done:**
 - `./gradlew lintDebug` (build with `./gradlew assembleDebug` when changing Gradle/manifest).
+- Live preview: `android run` on a device/emulator → open the edited screen → `android layout` (or `android screen capture`) to confirm the expected UI, `adb logcat -d -b crash` for crashes (skill `android-cli`).
+- No device/emulator available → say so in 1 line.
 - Paste the verify output into the report.

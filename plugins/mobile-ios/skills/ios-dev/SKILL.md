@@ -34,7 +34,7 @@ Read `rules/ios.md` at the plugin root first. Claude Code: `${CLAUDE_PLUGIN_ROOT
 - [references/architecture.md](references/architecture.md) — MVVM/MVC/Coordinator/TCA, Concurrency
 - [references/uikit-storyboard.md](references/uikit-storyboard.md) — Storyboard/IBOutlet pitfalls
 - [references/interoperability.md](references/interoperability.md) — UIKit-SwiftUI bridge
-- [references/navigation.md](references/navigation.md) · [references/testing.md](references/testing.md)
+- [references/navigation.md](references/navigation.md)
 - [references/api-integration-error-handling.md](references/api-integration-error-handling.md)
 - [references/platform-capabilities.md](references/platform-capabilities.md) · [references/security-performance-accessibility.md](references/security-performance-accessibility.md)
 - [references/xcode-cli.md](references/xcode-cli.md) — simulator/xcodebuild commands
@@ -44,8 +44,7 @@ Read `rules/ios.md` at the plugin root first. Claude Code: `${CLAUDE_PLUGIN_ROOT
 
 ```
 xcodebuild -list
-xcodebuild build -scheme <Scheme> -destination 'platform=iOS Simulator,name=iPhone 16' CODE_SIGNING_ALLOWED=NO | tail -20
-xcodebuild test -scheme <Scheme> -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:<Target>/<Class>
+xcodebuild build -scheme <Scheme> -destination 'platform=iOS Simulator,name=iPhone 16' CODE_SIGNING_ALLOWED=NO -derivedDataPath build | tail -20
 ```
 
-Task touches UI → also run on the simulator per [references/xcode-cli.md](references/xcode-cli.md).
+Then live preview on the simulator per [references/xcode-cli.md](references/xcode-cli.md): install → `launch --console` → edited screen → screenshot.

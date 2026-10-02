@@ -11,7 +11,7 @@ When the timeline forces the SDK to be written before the backend has real endpo
 3. Accept explicitly: verification now means "correct per our reading of the contract", not "correct against the real server". Budget for rework after the backend is done — do not treat the build-first phase as 100% complete.
 4. Where the contract and the implementation disagree (discovered midway) → state clearly which is the source of truth for the current build (usually: the real controller that has shipped beats the old document), do not silently pick one side.
 
-Do not rebuild a "double"/fake server in-repo to test against — a double written by the SDK itself only proves the SDK matches its own assumptions, not the real contract. Check against the real backend/staging when available, or review carefully against the contract document.
+Do not rebuild a "double"/fake server in-repo to verify against — a double written by the SDK itself only proves the SDK matches its own assumptions, not the real contract. Check against the real backend/staging when available, or review carefully against the contract document.
 
 ## A backend's/customer's own dialect — isolate with an interface seam
 

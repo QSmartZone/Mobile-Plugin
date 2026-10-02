@@ -3,7 +3,7 @@ description: Verify Flutter — analyze, run the app live, read runtime errors +
 allowed-tools: Bash(flutter:*), Bash(git diff:*)
 ---
 
-Verify the current Flutter app, optional dir: `$ARGUMENTS` (default `.`). Do not run `flutter test`.
+Verify the current Flutter app, optional dir: `$ARGUMENTS` (default `.`).
 
 1. Analyze: `dart` MCP tool `analyze_files` for files in `git diff --name-only`. No MCP → `flutter analyze`.
 2. Connect to the app: `dtd` `listDtdUris` → `connect`. No app running → `flutter --print-dtd run -d <device>` in the background, take the URI from the "Dart Tooling Daemon" line, then `connect`.

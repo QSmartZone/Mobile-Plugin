@@ -4,7 +4,7 @@ Comparison of when to choose Compose vs XML/View: [ui-compose-vs-views.md](ui-co
 
 ## State hoisting
 
-Composables should be stateless — receive state + callbacks from the caller, do not hold business state internally in plain variables. This makes Composables previewable, independently testable, and reusable in many places.
+Composables should be stateless — receive state + callbacks from the caller, do not hold business state internally in plain variables. This makes Composables previewable and reusable in many places.
 
 ```kotlin
 @Composable
@@ -19,7 +19,7 @@ The caller (usually the parent screen or ViewModel) holds `count`; the child Com
 
 - `remember`: lives within the composition, lost on rotate (config change) — use for pure UI state that need not be kept (e.g. temporary animation state).
 - `rememberSaveable`: survives config change, use for simple, serializable UI state (e.g. the text field being typed in, the selected tab).
-- `ViewModel`: state that must survive the Composable being fully disposed (navigate away then back), or business state that must be shared/tested independently of the UI.
+- `ViewModel`: state that must survive the Composable being fully disposed (navigate away then back), or business state that must be shared independently of the UI.
 
 ## Side-effect APIs
 
@@ -61,13 +61,9 @@ Use `collectAsStateWithLifecycle()` (from `androidx.lifecycle:lifecycle-runtime-
 val state by viewModel.state.collectAsStateWithLifecycle()
 ```
 
-## Testing
-
-Use `createComposeRule()`, find nodes via semantics (`onNodeWithText(...)`, `onNodeWithTag(...)` — set `Modifier.testTag(...)` when needed) instead of by XML id (which does not exist in Compose). Full examples: [testing.md](testing.md).
-
 ## Specific pitfalls
 
 - Forgetting `key()` in `LazyColumn` → re-renders the wrong item when the list reorders.
 - Putting side-effect logic (API calls, logging) directly in the Composable body instead of `LaunchedEffect` → re-runs on every recomposition, causing repeated API calls.
-- State not hoisted (Composable holds internal state in a property outside `remember`) → cannot preview, cannot test independently.
+- State not hoisted (Composable holds internal state in a property outside `remember`) → cannot preview, cannot reuse.
 - Wrong `Modifier` order changes behavior: `Modifier.padding(8.dp).clickable { }` (padding first, then clickable — smaller tap area) differs from `Modifier.clickable { }.padding(8.dp)` (clickable first, then padding — larger tap area, including the padding).

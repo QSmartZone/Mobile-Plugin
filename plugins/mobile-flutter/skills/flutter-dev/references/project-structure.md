@@ -46,10 +46,10 @@ When several apps in the same repo (monorepo) depend on one shared package via p
 
 ## Packaging when the project grows large
 
-Only split into a separate Dart package (`packages/<name>`, each package versioned independently via path dependency in the app's `pubspec.yaml`) when that feature genuinely needs reuse in another app, or another team needs to build/test it independently. Do not use melos or any monorepo management tool — pubspec path dependencies are enough. Do not split a package "to tidy up" when only 1 app uses it — it adds version pin + separate `pubspec.yaml` cost for no benefit.
+Only split into a separate Dart package (`packages/<name>`, each package versioned independently via path dependency in the app's `pubspec.yaml`) when that feature genuinely needs reuse in another app, or another team needs to build it independently. Do not use melos or any monorepo management tool — pubspec path dependencies are enough. Do not split a package "to tidy up" when only 1 app uses it — it adds version pin + separate `pubspec.yaml` cost for no benefit.
 
 ## pubspec.yaml
 
 - Pin versions with `^x.y.z` (caret), not absolute hard pins unless there is a specific compatibility reason.
 - Adding a new dependency: check whether `pubspec.yaml` already has an equivalent lib before adding a new one doing the same job.
-- `dev_dependencies` for: `flutter_test`, `mocktail`/`mockito`, `build_runner` (if using codegen), lint package (`flutter_lints`).
+- `dev_dependencies` for: `build_runner` (if using codegen), lint package (`flutter_lints`).

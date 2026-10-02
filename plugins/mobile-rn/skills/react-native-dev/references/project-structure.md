@@ -49,6 +49,6 @@ src/
 ## Principles
 
 - Name component files `PascalCase.tsx`, hooks `useXxx.ts`, everything else `camelCase.ts` — follow the convention already in the repo if it differs.
-- 1 file, 1 main export (component or hook) — easy to find, easy to test, avoids "convenience" files that gather unrelated things.
+- 1 file, 1 main export (component or hook) — easy to find, avoids "convenience" files that gather unrelated things.
 - Barrel files (`index.ts` re-exports) only at the feature/shared level; do not nest barrel files in multiple layers, which causes hard-to-debug circular imports.
 - Custom native code (if any, bare workflow) lives in `ios/`/`android/`; the JS/TS side calls it through a wrapper in `src/lib/`, not importing native modules directly across components.

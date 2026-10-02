@@ -40,4 +40,3 @@ Use when native must push many values over time (not a one-time request-response
 
 - Name channels by the convention `<package_id>/<feature>` to avoid channel collisions between packages.
 - Always wrap `invokeMethod` in try/catch catching `PlatformException` — native may throw exceptions that Dart cannot control.
-- Test Dart-side logic by mocking `MethodChannel` via `TestDefaultBinaryMessengerBinding` — no real device needed to test result handling.

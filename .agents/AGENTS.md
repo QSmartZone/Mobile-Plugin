@@ -4,7 +4,7 @@ Plugin `mobile-dev` (merged bundle of the packs chosen at `install.sh --pack`). 
 
 Read the rule for the platform of the file you are touching first: `rules/flutter.md`, `rules/android.md`, `rules/ios.md`, `rules/react-native.md` (only files of installed packs exist).
 
-Routing by touched file → skill. Flutter verify: workflow `verify` (analyze + live preview via Dart MCP); do not run `flutter test` when the project forbids tests.
+Routing by touched file → skill. Verify by live preview on a device/emulator/simulator. Flutter: workflow `verify` (analyze + live preview via Dart MCP).
 
 | File / task | Skill |
 | --- | --- |

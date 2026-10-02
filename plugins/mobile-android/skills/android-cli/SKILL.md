@@ -30,7 +30,6 @@ If `android` is not in PATH, install per OS:
 | `android info` | Show the configured device/SDK info |
 | `android update` | Update the CLI to the latest version |
 
-## Device interaction & journey tests
+## Device interaction
 
 - See [references/interact.md](references/interact.md) for device interaction (tap, input, adb...).
-- See [references/journeys.md](references/journeys.md) to run journey tests.

@@ -36,7 +36,6 @@ Read `rules/android.md` at the plugin root first. Claude Code: `${CLAUDE_PLUGIN_
 - Compose vs View: [references/ui-compose-vs-views.md](references/ui-compose-vs-views.md)
 - Writing Composables: [references/jetpack-compose.md](references/jetpack-compose.md)
 - Kotlin conventions: [references/kotlin-conventions.md](references/kotlin-conventions.md)
-- Testing: [references/testing.md](references/testing.md)
 - Lifecycle & state: [references/lifecycle-and-state.md](references/lifecycle-and-state.md)
 - Navigation: [references/navigation.md](references/navigation.md)
 - API & error handling: [references/api-integration-error-handling.md](references/api-integration-error-handling.md)
@@ -47,6 +46,5 @@ Read `rules/android.md` at the plugin root first. Claude Code: `${CLAUDE_PLUGIN_
 ## Verify
 
 - `./gradlew :app:lintDebug`
-- `./gradlew :app:testDebugUnitTest --tests "<Class>"`
 - `./gradlew :app:assembleDebug`
-- Task touches UI → run on a device/emulator via skill `android-cli`.
+- Live preview on a device/emulator via skill `android-cli`: `android run` → edited screen → `android layout`/`android screen capture`.

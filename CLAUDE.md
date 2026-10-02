@@ -9,5 +9,5 @@ Applies to agents editing this repo. Does not apply to projects that install the
 - Version-dependent facts (API level, RN/Flutter/iOS/Dart): state the version.
 - `SKILL.md` ≤300 words; `description` ≤25 words, pattern "what it does / use when"; "do not use when" only to disambiguate skills in the same plugin; references start with a "Pitfalls" section. Measure: `claude --plugin-dir plugins/<name> plugin details <name>`.
 - Changing a skill/agent/command → bump `version` in that plugin's `plugins/<name>/.claude-plugin/plugin.json`.
-- Test/verify: do not hard-code test-running commands in skills/agents/commands; testing follows the target project's policy (`AGENTS.md`/`CLAUDE.md`).
+- Verify guidance in skills/agents/commands = static check + live preview on a device/emulator/simulator only.
 - All content in English; code, commands and tool names unchanged.

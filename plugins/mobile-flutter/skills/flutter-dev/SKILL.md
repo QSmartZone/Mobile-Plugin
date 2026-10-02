@@ -19,7 +19,7 @@ Read `rules/flutter.md` at the plugin root first. Claude Code: `${CLAUDE_PLUGIN_
 | --- | --- |
 | Local state of a single widget (toggle, animation) | `setState` |
 | Share state among a few nearby descendant widgets | `InheritedWidget`/`Provider` |
-| Large app, many async flows, business logic must be testable separately from UI | `Bloc` or `Riverpod` |
+| Large app, many async flows, business logic kept separate from UI | `Bloc` or `Riverpod` |
 | Unsure — project already has a lib | Use the existing lib; do not mix 2 state solutions in the same feature |
 
 ## Commonly wrong decisions
@@ -41,7 +41,6 @@ Read `rules/flutter.md` at the plugin root first. Claude Code: `${CLAUDE_PLUGIN_
 - [references/api-integration-error-handling.md](references/api-integration-error-handling.md)
 - [references/performance.md](references/performance.md)
 - [references/ui-adaptive-accessibility.md](references/ui-adaptive-accessibility.md)
-- [references/testing.md](references/testing.md)
 - [references/platform-channels.md](references/platform-channels.md)
 - [references/troubleshoot.md](references/troubleshoot.md)
 
@@ -51,4 +50,3 @@ Read `rules/flutter.md` at the plugin root first. Claude Code: `${CLAUDE_PLUGIN_
 
 - `/verify`: `analyze_files` (Dart MCP) or `flutter analyze` → hot reload → `get_runtime_errors` → `widget_inspector`.
 - Hot reload per `${CLAUDE_PLUGIN_ROOT}/rules/hot_reload.md`.
-- Tests: follow the project policy (`AGENTS.md`/`CLAUDE.md`); do not run `flutter test` on your own.

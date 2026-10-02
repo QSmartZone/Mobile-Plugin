@@ -2,7 +2,7 @@
 
 ## Write one only when truly needed
 
-Before writing a native module, check whether Expo SDK or a community package (react-native-community, or a popular well-maintained lib) already covers that native API — a hand-written native module is a long-term maintenance cost (you must track OS changes and test on both platforms yourself).
+Before writing a native module, check whether Expo SDK or a community package (react-native-community, or a popular well-maintained lib) already covers that native API — a hand-written native module is a long-term maintenance cost (you must track OS changes and verify on both platforms yourself).
 
 ## Old bridge vs JSI/TurboModules/Fabric
 
@@ -47,5 +47,5 @@ When a native module needs changes to `Info.plist`/`AndroidManifest.xml`/Podfile
 ## Principles
 
 - Wrap the native module in a JS/TS service layer (`src/lib/battery.ts`) — UI calls through the wrapper, not importing `NativeModules.BatteryModule` directly across many components, so changing the implementation later does not require edits in many places.
-- Test native modules through mocks at the JS layer; do not try to run real native code in Jest.
+- Verify a native module by running the app on both platforms (iOS simulator + Android emulator) and calling it from the edited screen.
 - Runtime permissions (camera, location, notification...) always go through the permission API built into each Expo module (`expo-camera`, `expo-location`... each has its own request/check permission functions) for managed workflow, or `react-native-permissions` for bare workflow. Check the status before calling an API that needs permission; do not assume the permission is granted.

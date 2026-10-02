@@ -13,10 +13,6 @@ description: General React Native rules
 **Keep the architecture:**
 - Do not switch Expo↔bare, change the navigation lib, or change the state lib unless explicitly requested.
 
-**Tests — follow the project policy:**
-- Read the project's `AGENTS.md`/`CLAUDE.md` first. If the project forbids tests → do not write them, do not run `jest`.
-- No policy: logic with a branch, loop, or parser → propose 1 unit test, ask the user before running.
-
 **Network errors:**
 - Components do not call `fetch`/axios directly; go through a service/hook.
 - Distinguish network errors, HTTP status (`fetch` does not throw on 4xx/5xx — check `res.ok`), parse errors, business errors.
@@ -34,4 +30,6 @@ description: General React Native rules
 
 **Verify before reporting done:**
 - `npx tsc --noEmit` + `npx eslint <edited file>`.
+- Live preview: Metro running + app open on an emulator/simulator → Fast Refresh → open the edited screen; check Metro output and the screen for red box/LogBox errors. Screenshot: Android `android screen capture` (skill `mobile-android:android-cli`, if installed), iOS `xcrun simctl io booted screenshot`.
+- No device/emulator available → say so in 1 line.
 - Paste the verify output into the report.

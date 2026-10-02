@@ -9,7 +9,7 @@ xcrun simctl install <udid> <path.app>       # install the built app
 xcrun simctl launch --console <udid> <bundle-id>   # run the app, print stdout/stderr logs to the terminal
 xcrun simctl io <udid> screenshot out.png    # take a simulator screenshot
 xcrun simctl spawn <udid> log stream --predicate 'subsystem == "<bundle-id>"'   # view runtime logs by bundle
-xcrun simctl openurl <udid> "myapp://path"   # test deep link/universal link
+xcrun simctl openurl <udid> "myapp://path"   # open a deep link/universal link
 xcrun simctl privacy <udid> grant camera <bundle-id>   # grant permission up front so the flow isn't blocked by a dialog
 xcrun simctl shutdown all                    # shut down all simulators (when the simulator hangs)
 xcrun simctl erase <udid>                    # reset the simulator to factory (loses data/installed apps)

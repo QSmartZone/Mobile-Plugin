@@ -89,7 +89,7 @@ iconButton.accessibilityLabel = "Scan QR code"
 decorativeImageView.isAccessibilityElement = false
 ```
 
-Quick test: Settings > Accessibility > enable VoiceOver, listen for a sensible reading order and labels; enable Larger Text (large Dynamic Type) to check the layout doesn't break (text cut off, overlapping).
+Quick check: Settings > Accessibility > enable VoiceOver, listen for a sensible reading order and labels; enable Larger Text (large Dynamic Type) to check the layout doesn't break (text cut off, overlapping).
 
 Minimum touch target 44x44pt for every tappable button/icon (Apple HIG) — smaller icons need extra padding, do not enlarge the icon.
 

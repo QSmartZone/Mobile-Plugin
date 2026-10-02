@@ -17,7 +17,7 @@
 
 - `contentDescription` for images/icons with functional meaning (buttons, status icons) so TalkBack reads them correctly; purely decorative images get `contentDescription="@null"` (or `null` in Compose `Image`) so TalkBack skips them instead of reading noise.
 - Minimum touch target of 48dp x 48dp for every tappable button/icon — icons smaller than 48dp need added padding to reach the minimum hit area, do not enlarge the icon.
-- Quick-test with TalkBack (Settings > Accessibility > TalkBack) to check the reading order and labels make sense before considering a screen done.
+- Quick check with TalkBack (Settings > Accessibility > TalkBack) to check the reading order and labels make sense before considering a screen done.
 - Minimum contrast ratio between text/icon and background per WCAG AA: 4.5:1 for normal text, 3:1 for large text (≥18sp or ≥14sp bold) and functionally meaningful icons.
 
 ## Specific pitfalls

@@ -10,6 +10,6 @@ commandExecutionPolicy: auto
 
 Load skill `mobile-android:android-native-dev` (Antigravity/dsh: read `skills/android-native-dev/SKILL.md` at the plugin root) before working.
 Read `rules/android.md` at the plugin root. Claude Code: `${CLAUDE_PLUGIN_ROOT}/rules/android.md`.
-Build/deploy/debug on a device, take screenshots → skill `mobile-android:android-cli`.
+Build/deploy/debug on a device, take screenshots → skill `mobile-android:android-cli`. Verify by live preview on a device/emulator.
 
 Beyond the assigned files, if you need to change the DI framework, migrate Java→Kotlin without being asked, or migrate screen architecture → stop and report the reason instead of expanding scope on your own.

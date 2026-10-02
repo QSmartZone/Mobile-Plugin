@@ -13,10 +13,6 @@ description: General Flutter/Dart rules
 **Preserve the architecture:**
 - Do not change state management, `lib/` structure, or migrate without an explicit request.
 
-**Tests — follow project policy:**
-- Read the project's `AGENTS.md`/`CLAUDE.md` first. Project forbids tests → do not write them, do not run `flutter test`.
-- No policy: logic with branches, loops, or a parser → propose 1 unit/widget test, ask the user before running it.
-
 **Network errors:**
 - Widgets do not call the HTTP client directly; go through a repository/service.
 - Distinguish network errors (`DioException`/`SocketException`), parse errors (`FormatException`/`TypeError` in `fromJson`), and business errors.
@@ -31,4 +27,5 @@ description: General Flutter/Dart rules
 
 **Verify before reporting done:**
 - `/mobile-flutter:verify` (analyze + hot reload + runtime errors + widget tree via Dart MCP).
+- No device/emulator available → say so in 1 line.
 - Paste the verify output into the report.

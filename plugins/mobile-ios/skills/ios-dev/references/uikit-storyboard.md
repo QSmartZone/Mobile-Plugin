@@ -119,4 +119,4 @@ DispatchQueue.main.async {
 }
 ```
 
-Every UIKit operation (`reloadData`, setting text, animation) must run on the main thread — calling from a background thread (a raw network callback not yet dispatched, `DispatchQueue.global`) makes UI updates not show immediately or crash inconsistently (`UIKit is only safe to use from the main thread`); it doesn't always crash immediately, so it is easy to miss when testing.
+Every UIKit operation (`reloadData`, setting text, animation) must run on the main thread — calling from a background thread (a raw network callback not yet dispatched, `DispatchQueue.global`) makes UI updates not show immediately or crash inconsistently (`UIKit is only safe to use from the main thread`); it doesn't always crash immediately, so it is easy to miss during a quick run.

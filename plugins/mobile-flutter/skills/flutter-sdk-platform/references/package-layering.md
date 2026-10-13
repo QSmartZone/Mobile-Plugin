@@ -1,46 +1,54 @@
 # Package layering — details
 
-Reference: ADR "SDK ships as N path-linked packages, without a workspace tool" + ADR "core dependencies are shared by every sub-package".
+Reference: ADR "SDK ships as N path-linked packages, without a workspace tool" + ADR "headless domain packages with injected dependencies".
 
-## Standard layers — 4 tiers
+## Standard Architecture: Headless Feature Modules
+
+In a clean, modern multi-package Flutter SDK, the SDK contains **only headless feature packages** with no UI, no Flutter Blocs, and no routing:
 
 ```
-                    ┌──────┐
-                    │ core │   config, HTTP client, auth, secure storage,
-                    └───┬──┘   realtime transport, error model — pure Dart,
-                        │      NO UI framework imports
-                   ┌────▼─────┐
-                   │ shared-ui│   design tokens, app shell, primitive widgets
-                   └────┬─────┘
-          ┌─────────────┼─────────────┐
-          │             │             │
-   ┌──────▼─────┐ ┌─────▼────┐ ┌──────▼─────┐
-   │ domain pkg │ │domain pkg│ │ domain pkg │   do not import each other
-   └──────┬─────┘ └─────┬────┘ └──────┬─────┘
-          └─────────────┼─────────────┘
-                  ┌──────┴──────┐
-             ┌────▼───┐   ┌─────▼────┐
-             │bundle A│   │ bundle B │   preset assembled for one role/tenant
-             └────────┘   └──────────┘
+sdk/ (Headless Domain Modules)
+  ├── <prefix>_auth (session, tokens, interceptor, biometric seam)
+  ├── <prefix>_booking (booking API, repository, realtime transport)
+  ├── <prefix>_map (location, geocoding, places behind provider seams)
+  ├── <prefix>_payment (payment API seam, payment providers)
+  └── <prefix>_notification (notification provider seam, streams)
+       ▲              ▲              ▲
+       │              │              │ path dependencies
+┌──────┴──────────────┴──────────────┴──────┐
+│ App / Shared App Shell Layer              │
+│ (e.g. core shell + customer/role apps)   │
+│ - Wires modules in di.dart                │
+│ - Injects Dio (authorizedDio from auth)   │
+│ - Holds design system, UI, Blocs, fakes   │
+└───────────────────────────────────────────┘
 ```
 
-- **core**: every other package depends on it. No reverse dependency. No UI framework imports (pure Dart) — core must be usable where no UI is needed (e.g. a background service).
-- **shared-ui**: depends on core, provides the app shell + tokens + shared primitive widgets. Domain packages do not redraw primitives themselves.
-- **domain package** (middle tier): each package = 1 independent feature/domain (booking, payment, map, chat...). **They do not import each other** — if 2 domains both need something, push it down to core/shared-ui. Reason: a consumer needing only domain A should not have to compile domain B's native layer (e.g. a consumer without maps should not pull in the Google Maps SDK/geolocator).
-- **bundle** (preset per role/tenant): pre-assembles N domain packages + theme + routes + permissions for one consumer type (e.g. "end-user app" vs "worker app"). A bundle **holds no business logic of its own** — it only pins the role, forwards extension points, and merges the screen presets the domains contribute (see composition-and-session.md). A domain project matching no existing preset uses the domain packages directly; going through a bundle is not mandatory.
+### Core Invariants
 
-## Why no workspace tool (melos, pnpm workspace...)
+1. **Strictly Headless**: No widgets, themes, routers, or Blocs live in `sdk/`. App shells and consumer apps own all UI and state management.
+2. **Zero Cross-SDK Imports**: Sibling SDK packages never import each other (e.g. `booking` never imports `auth` or `map`). Each module stays standalone and lightweight.
+3. **Injected Dependencies via Config**: Modules accept dependencies (HTTP client `Dio`, baseUrl, session token getters, callbacks) from the consuming app at startup via a typed `Config` class (e.g. `BookingConfig`, `MapConfig`).
+4. **Typed Result Boundaries**: All public API methods return `ResultDart<T, ModuleFailure>` (or equivalent typed result). Never throw uncaught exceptions across the module boundary.
+5. **App Shell Ownership**: Role-specific flows, screens, forms, tabs, and navigation logic live entirely in the application layer, keeping the SDK domain pure and reusable.
 
-When packages are linked only by path dependency and not published, a workspace tool adds a globally installed tool + a second configuration surface, in exchange for a "resolve each package in the right order" loop that a few-line script already does. Consider a workspace tool only when: publishing to a private registry, or the package count is so large (>15-20) that a hand-written script can no longer manage it.
+## Workspace Management: Path Dependencies
 
-## Dependency hygiene
+When packages are linked in a monorepo via path dependencies and not published to a public registry, keep the build system simple:
+- Use direct `path:` dependencies in `pubspec.yaml` (e.g. `path: ../../sdk/<module>`).
+- A lightweight shell script (e.g. `./clean_flutter.sh` running `flutter pub get` in dependency order) is preferred over heavy monorepo management tools (melos, etc.).
+- Avoid extra configuration layers unless publishing to a private registry or managing >15-20 packages.
 
-- A third-party dependency that **every** sub-package needs → declare it exactly once in core, do NOT redeclare it in sub-packages (avoids version drift on bumps).
-- A sub-package needing types from a dependency declared in core → core re-exports **selectively** (`export 'package:x/x.dart' show TypeA, TypeB;`), not the whole package — exporting the whole package is the path for 3rd-party types to leak into every consuming widget, exactly the mistake the referenced legacy SDK made.
-- If the language/tool has a lint of the kind "must declare a direct dependency to import it" (`depend_on_referenced_packages` in Dart) and it blocks a legitimate transitive import per the hygiene above → disable that lint in sub-packages, keep it enabled in core (core is the only place where pubspec/package.json must be complete). Trade-off: a package genuinely missing a dependency (absent from core too) fails at the resolve/install step instead of the lint step — the error still appears, it just moves.
-- Before adding a new dependency line to a sub-package: grep core's dependency declaration file first — if it is there, import directly, do not add a duplicate line.
-- A package declares a dependency only when **something imports it** — a declared but unused dependency still accumulates build cost (native plugins pull in platform configuration, install time) for every consumer.
+## Dependency Hygiene
 
-## When to split out a new domain package
+- **Minimal Surface**: A headless package declares a dependency only when something inside it directly imports that dependency. Unused dependencies add unnecessary native and compile-time overhead.
+- **Export Control**: Re-export external types selectively (`export '...' show TypeA;`) rather than exposing entire third-party libraries. This prevents third-party API types from leaking into consumers.
+- **No Native Leaks**: If a domain does not require native device capabilities (e.g. pure HTTP/JSON domain), keep it pure Dart so consumers do not pay native build overhead.
 
-Split when: (a) the domain has a heavy native plugin/dependency that consumers not needing it should not pay for, or (b) the domain will be reused independently by others/other projects. Do not split "for tidiness" when only 1 consumer uses it — adding a package adds one config file + one more thing to remember in the dependency graph, it is not free.
+## When to Split Out a New Package
+
+Split a feature into a new SDK package when:
+1. The domain has heavy dependencies or native plugins (e.g. maps, geolocators, biometrics) that consumers who do not use the feature should not have to compile.
+2. The domain is genuinely shared and reused across multiple distinct applications.
+
+Avoid splitting packages prematurely for trivial helper functions or features used by only one application.

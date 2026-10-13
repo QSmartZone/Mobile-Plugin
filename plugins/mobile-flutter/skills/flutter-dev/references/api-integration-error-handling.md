@@ -28,6 +28,15 @@ Whatever state management is used (`setState`/Bloc/Riverpod), a screen calling a
 - Rethrowing the HTTP client's raw exception (`DioException`, `SocketException`...) straight up to the UI layer — the UI must import and know implementation details of the HTTP client in use, breaking the layer boundary; if the HTTP client changes later, every place catching that raw exception must change. Have a domain-specific error type (or message mapping) at the repository boundary.
 - Re-calling the API on every rebuild because the call is placed in `build()` instead of `initState`/a user-triggered action.
 
+## SDK boundary error handling (SDK Modules)
+
+When writing or calling SDK modules (`sdk/`):
+- **Never throw exceptions across the module boundary**: Public methods in SDK modules return `ResultDart<T, ModuleFailure>` (e.g. `Result<T, AuthFailure>`).
+- **Module failure families**: Define a closed failure hierarchy (e.g. `sealed class AuthFailure`, `sealed class BookingFailure`) capturing specific causes (e.g. `invalidCredentials`, `network`, `sessionExpired`, `serverError`).
+- **Do not leak raw HTTP client exceptions**: Catch `DioException` inside the SDK's repository/API layer and map it directly into the module's failure type before returning.
+- **Interceptors & try/finally**: In auth/dio interceptors, wrap any async operation before `handler.next` / `handler.reject` in `try/finally` so the request pipeline never hangs indefinitely.
+- **Sensitive data safety**: Never attach passwords, OTPs, or bearer tokens to failure objects, state properties, or log messages.
+
 ## Retry/cancel
 
 Add only when really needed: let the user tap retry on a network error; cancel an in-flight request when the user leaves the screen before the response arrives (avoid `setState`/emit on a disposed widget). Do not build a complex automatic retry mechanism if the app has no such requirement.

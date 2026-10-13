@@ -6,13 +6,18 @@
 - A vague review checklist ("code is clean") — it must be concrete enough to say "grep pattern X must be empty".
 - Rebuilding a fake backend in-repo to verify against — it only proves the SDK matches its own assumptions; use the real backend/staging or the contract document.
 
-## Verify steps
-
-1. **Resolve + analyze every package in dependency order** — a short script (no workspace tool needed, see package-layering.md) running `flutter pub get` + `flutter analyze` for each package, stopping at the first package that fails.
-2. **Live preview on a host app** — run the consuming app (or the package's `example/` app) on a device/emulator, hot reload after each edit, and check the edited screen via `/mobile-flutter:verify` (runtime errors + widget tree). No host app yet → build a minimal `example/` app that wires the package with real config.
-3. **A concrete review checklist** — lives with the SDK's skill/rule, grows whenever a bug slipped past the previous review; it is not written once and left alone.
-4. **The review gate is the final safety net** — do not merge without passing review.
-5. **Run against the real backend/staging at the first opportunity** — expect a round of rework then; it is not a sign the SDK was built wrong earlier.
+## Commands by usecase
+ 
+| Usecase | Command / Tool | Note |
+| --- | --- | --- |
+| Lint / Static analysis across SDK packages | `flutter analyze` in each package directory | Stops at first failure; run in dependency order |
+| Dev loop: Live preview & test features | `flutter run --dart-define-from-file=<env>` | Directly on device/emulator; never use `flutter build` |
+| Hot reload during active development | `hot_reload` (Dart MCP) | Immediate UI update |
+| Reset state / configuration changes | `hot_restart` (Dart MCP) | Reloads app without rebuild |
+| Validate UI rendering | `widget_inspector` (Dart MCP) | Confirms widget tree structure |
+| Catch runtime crashes & exceptions | `get_runtime_errors` (Dart MCP) | Clear errors before test, read after |
+| Multi-package cache & resolve reset | `./clean_flutter.sh` (or `flutter clean && flutter pub get`) | Cleans and re-resolves all packages |
+| Release build generation | `flutter build apk` / `flutter build appbundle` | **Only** for artifact distribution |
 
 ## Trade-offs to state plainly to the decision maker
 

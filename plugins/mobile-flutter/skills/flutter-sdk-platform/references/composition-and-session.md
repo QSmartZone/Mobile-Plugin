@@ -30,7 +30,7 @@ module A (booking) ─── internal event/stream ───▶ app shell (di.da
 Do not let each domain package open its own unauthenticated HTTP client or duplicate token refresh logic. Doing so leads to out-of-sync tokens, race conditions, and duplicate refresh requests.
 
 In modern modular SDK architectures:
-1. **Auth Module owns Session & Interceptor**: An authentication module (e.g. `o2o_auth`) manages tokens in secure platform storage and provides single-flight refresh interceptors (`AuthInterceptor`).
+1. **Auth Module owns Session & Interceptor**: An authentication module (e.g. `auth_sdk` or `auth_module`) manages tokens in secure platform storage and provides single-flight refresh interceptors (`AuthInterceptor`).
 2. **Factory method produces configured client**: The session exposes a factory method, e.g. `session.authorizedDio(serviceRoot)`, which produces a `Dio` instance wired with base headers, timeout configurations, and the token refresh interceptor.
 3. **App injects client and hooks at startup**: The consuming app wires modules in `di.dart`, passing the authorized `Dio` and relevant lifecycle hooks into each module's configuration:
 

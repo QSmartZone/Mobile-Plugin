@@ -10,12 +10,12 @@ Read `rules/flutter.md` at the plugin root first. Claude Code: `${CLAUDE_PLUGIN_
 ## Inspect the Flutter context first (SDK vs App)
 
 Identify which target context the current task belongs to:
-1. **SDK Package Development** (e.g. `sdk/o2o_*` or standalone pub package):
+1. **SDK Package Development** (e.g. `sdk/*`, `packages/*`, or standalone pub package):
    - **Headless & pure domain**: No UI widgets, no Flutter `Bloc`/`Cubit`, no routers, no hardcoded fakes.
    - **Boundary & errors**: Return typed results (e.g., `ResultDart<Success, Failure>`) with module-scoped failures. Never throw uncaught exceptions across module boundaries.
    - **Self-contained**: No SDK package imports another sibling SDK package. Dependency injection (e.g. HTTP client, session tokens, config) is injected from the host/consumer.
    - **Architecture & Layering**: For designing or restructuring multi-package SDKs, refer to `mobile-flutter:flutter-sdk-platform`.
-2. **Application & App Shell Development** (e.g. `o2o_platform/*`, consumer apps):
+2. **Application & App Shell Development** (e.g. `apps/*` or consumer apps):
    - **Follow existing lib**: State management (`flutter_bloc`, `riverpod`, `provider`), routing (`go_router`, named routes), and HTTP setup already in `pubspec.yaml`.
    - **Feature layout**: Feature-first folders directly under `lib/` (or `lib/src/`) without unnecessary extra nestings unless repo convention dictates.
    - **Composition**: The app or shared app shell wires SDK modules together in `di.dart` / bootstrap.

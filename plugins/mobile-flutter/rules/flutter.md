@@ -11,8 +11,8 @@ description: General Flutter/Dart rules
 - Follow the existing state/routing/HTTP libs (`flutter_bloc`/`riverpod`/`provider`, `go_router`, `dio`...). Do not propose a new lib when the existing one suffices.
 
 **Preserve the architecture (SDK vs App):**
-- In **SDK modules** (`sdk/`): strictly headless. No UI widgets, no `flutter_bloc`, no routing, no hardcoded fakes. Return `ResultDart<T, ModuleFailure>`. Zero cross-SDK imports; dependencies (`Dio`, callbacks) must be injected via `ModuleConfig`.
-- In **Application layer** (`o2o_platform/*`, consumer apps): wire SDK modules in `di.dart`/bootstrap. UI, Blocs, router, fakes, and design tokens live here. Do not change state management or `lib/` structure without explicit request.
+- In **SDK modules** (`sdk/*` or packages): strictly headless. No UI widgets, no `flutter_bloc`, no routing, no hardcoded fakes. Return `ResultDart<T, ModuleFailure>`. Zero cross-SDK imports; dependencies (`Dio`, callbacks) must be injected via `ModuleConfig`.
+- In **Application layer** (`apps/*` or consumer apps): wire SDK modules in `di.dart`/bootstrap. UI, Blocs, router, fakes, and design tokens live here. Do not change state management or `lib/` structure without explicit request.
 
 **Network errors & Boundaries:**
 - Widgets do not call the HTTP client directly; go through a repository/service.

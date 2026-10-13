@@ -9,7 +9,7 @@ This skill defines the architectural blueprint for designing and building a **mu
 
 ## Standard Architecture Blueprint
 
-- **Headless Domain Modules**: The SDK is strictly composed of independent, headless feature packages (e.g. `o2o_auth`, `o2o_booking`, `o2o_map`, `o2o_payment`, `o2o_notification`).
+- **Headless Domain Modules**: The SDK is strictly composed of independent, headless feature packages (e.g. `auth`, `booking`, `map`, `payment`, `notification`).
 - **Pure Domain & Zero UI**: No Flutter widgets, no `flutter_bloc` / state management, no routing, and no hardcoded fakes live in the SDK.
 - **Typed Boundary Results**: Public methods return typed results (e.g. `ResultDart<T, ModuleFailure>`). Never throw uncaught exceptions across module boundaries.
 - **Application Shell Ownership**: UI, design tokens, app Blocs, routes, and role-specific screens live entirely in the consuming applications or a shared app shell.

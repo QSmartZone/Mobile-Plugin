@@ -1,6 +1,6 @@
 ## Layout: Application vs Headless SDK Module
 
-### 1. Application Layout (`tourist`, `guide`, consumer apps)
+### 1. Application Layout (Consumer / Client Apps)
 Feature folders sit directly under `lib/` (or `lib/src/`), avoiding unnecessary nested wrappers unless requested:
 ```
 lib/
@@ -13,7 +13,7 @@ lib/
 └── common/                     # Helpers, utils, formatters (no entities, no widgets)
 ```
 
-### 2. Headless SDK Module Layout (`sdk/o2o_*`)
+### 2. Headless SDK Module Layout (`sdk/*` or `packages/*`)
 Pure headless domain modules. No UI widgets, no Flutter Bloc/Cubit, no routing, no hardcoded fakes:
 ```
 sdk/my_module/
@@ -50,7 +50,7 @@ When using a codegen HTTP client (retrofit-style) + `json_serializable`/equivale
 ## Shared Packages vs App Packages
 
 - **Headless SDK modules**: Layer-first or domain-first inside `lib/src/`, strictly headless and returning typed `ResultDart`.
-- **Shared App Shell/Core** (`travel_core`): Holds shared design systems, common widgets, shared Blocs (e.g. `AuthBloc`), fakes, and onboarding gates.
+- **Shared App Shell/Core**: Holds shared design systems, common widgets, shared Blocs (e.g. `AuthBloc`), fakes, and onboarding gates.
 - **Consumer Apps**: Composes SDK modules and shared core in `di.dart` / bootstrap.
 
 ## Packaging when the project grows large

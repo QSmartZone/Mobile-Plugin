@@ -26,17 +26,4 @@ description: General Flutter/Dart rules
 **Out of scope:**
 - New `MethodChannel`/platform channel, changing the state lib app-wide → stop, state the reason.
 
-**Commands by usecase:**
-
-| Usecase | Command | Note |
-| --- | --- | --- |
-| Static analysis / Lint check | `flutter analyze` | Stop at first error |
-| Live preview / Debug / Check UI & logic | `flutter run --dart-define-from-file=<env>` | Dev loop, hot reload enabled |
-| Hot reload after edit | `hot_reload` (Dart MCP) | Stateful changes require restart |
-| Full state / main() reset | `hot_restart` (Dart MCP) | Resets state |
-| Inspect widget hierarchy | `widget_inspector` (Dart MCP) | Verify rendered layout |
-| Check runtime exceptions | `get_runtime_errors` (Dart MCP) | Check crashes & assertion failures |
-| Dependency install / resolve | `flutter pub get` | Use `--offline` if network hangs |
-| Clean stale build cache | `flutter clean && flutter pub get` | Run when build is corrupted |
-| Localization update | `flutter gen-l10n` | Run after editing `.arb` |
-| Build release APK / bundle | `flutter build apk` / `flutter build appbundle` | **Only** for artifact delivery, NEVER for verify/dev |
+**Commands by usecase:** see `skills/flutter-dev/references/commands.md` (when to run format/analyze/run/clean/gen-l10n/build) and `skills/flutter-dev/references/dart-mcp.md` (hot reload, runtime errors, widget tree). Never `flutter build apk|appbundle` for verify/dev.

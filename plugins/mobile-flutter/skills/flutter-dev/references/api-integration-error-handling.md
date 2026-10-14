@@ -28,6 +28,26 @@ Whatever state management is used (`setState`/Bloc/Riverpod), a screen calling a
 - Rethrowing the HTTP client's raw exception (`DioException`, `SocketException`...) straight up to the UI layer — the UI must import and know implementation details of the HTTP client in use, breaking the layer boundary; if the HTTP client changes later, every place catching that raw exception must change. Have a domain-specific error type (or message mapping) at the repository boundary.
 - Re-calling the API on every rebuild because the call is placed in `build()` instead of `initState`/a user-triggered action.
 
+## Dio + Retrofit (when `retrofit` is in `pubspec.yaml`)
+
+Pitfalls:
+- Hand-writing `dio.get(...)`/`toJson` next to an existing `@RestApi` client: two sources of truth for one endpoint. Add the method to the client.
+- Editing `*.g.dart`: overwritten on the next build. Change the annotated source, then `dart run build_runner build --delete-conflicting-outputs` (or the repo's generate script). Generated files are usually gitignored, so a fresh clone needs the build before analyze/run.
+- Putting entity mapping or error mapping inside the client: the client stays a pure declaration. Wrap it.
+- Interpolating ids into the path by hand: use `@Path('id')` and `Uri.encodeComponent` on user-supplied values.
+- Building query maps in widgets: use a typed query object with `toQueryParameters()` and `@Queries()`; omit null filters.
+
+Shape:
+
+| Piece | Where | Does |
+| --- | --- | --- |
+| `@RestApi() abstract class XxxClient` + `part 'xxx_client.g.dart'` | `data/api/` | Declares `@GET/@POST...` returning `Future<Envelope<XxxDto>>` or `Future<XxxDto>` |
+| `@JsonSerializable()` DTO | `data/dto/` | Wire shape only; request DTOs emit only the schema's properties |
+| Wrapper (`Xxx Api`/repository) | `data/api/` or `data/repository/` | Calls the client, maps DTO → entity, runs every call through one guard that turns `DioException` / parse errors into the module's failure type |
+| `Dio` | injected | Auth, logging and timeouts live in interceptors on the injected instance; the client takes `Dio` and `baseUrl` in its factory |
+
+Success envelope (`{message, status, data}`): one generic `@JsonSerializable(genericArgumentFactories: true)` envelope class, unwrapped in the wrapper so callers never see it.
+
 ## SDK boundary error handling (SDK Modules)
 
 When writing or calling SDK modules (`sdk/`):

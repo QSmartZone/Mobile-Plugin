@@ -5,7 +5,7 @@ paths: ["**/*.dart"]
 description: Proactively connect to Flutter apps and hot reload
 ---
 
-Whenever you make edits to any Dart/Flutter file (`*.dart`) in this project — tool names per `dart mcp-server` (Dart SDK 3.13):
+Whenever you make edits to any Dart/Flutter file (`*.dart`) in this project:
 
 1. Connect: `dtd` with `listDtdUris`, then `connect` to the URI of the project's app. A DTD whose working dir is the home directory belongs to an IDE; apps launched from the IDE are there.
 2. No DTD found → start the app in the background: `flutter --print-dtd run -d <device>`, take the URI from the "Dart Tooling Daemon" line, then `connect`.

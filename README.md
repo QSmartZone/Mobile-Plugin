@@ -24,7 +24,7 @@ Rules are not shared across platforms: touch targets, null-safety, network error
 
 - `/mobile-flutter:verify` — analyze (`analyze_files` or `flutter analyze`) → connect to the app via `dtd` (if not running, `flutter --print-dtd run`) → `hot_reload` → `get_runtime_errors` → `widget_inspector`/`flutter_driver_command`.
 - Verify = static check (analyze/lint/tsc/build) + live preview on a device/emulator/simulator (Flutter hot reload via Dart MCP, Android `android run` + `android layout`, iOS `simctl launch` + screenshot, RN Fast Refresh).
-- Dart MCP needs Dart SDK ≥3.9 (tool names per SDK 3.13: `dtd`, `hot_reload`, `hot_restart`, `get_runtime_errors`, `widget_inspector`, `flutter_driver_command`, `analyze_files`).
+- Dart MCP tools: `dtd`, `hot_reload`, `hot_restart`, `get_runtime_errors`, `widget_inspector`, `flutter_driver_command`, `analyze_files`.
 
 ### Notes for plugin developers
 

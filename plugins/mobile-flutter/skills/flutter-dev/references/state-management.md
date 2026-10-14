@@ -40,3 +40,13 @@ Replaces Provider when you need: compile-time safety (no runtime `ProviderNotFou
 ## Selection principle — avoid mixing
 
 Do not use 2 different state solutions for the same data flow within a feature (for example both Bloc and Provider for the same screen) — it raises code-reading cost without raising benefit. If the project has chosen one solution in `pubspec.yaml`, follow it; do not add a new state management lib that is not already in the dependencies.
+
+## Quick choice
+
+| Need | Choose |
+| --- | --- |
+| Local state of a single widget (toggle, animation) | `setState` |
+| Share state among a few nearby descendant widgets | `InheritedWidget`/`Provider` |
+| Large app, many async flows, business logic kept separate from UI | `Bloc` or `Riverpod` |
+| Unsure — project already has a lib | Use the existing lib; do not mix 2 state solutions in the same feature |
+| Headless SDK package | No UI state management; pure Dart streams, callbacks, or result objects |
